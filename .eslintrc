@@ -1,0 +1,12 @@
+{
+    "extends": "react-app",
+    "rules": {
+        "semi": ["error", "never"],
+        "no-console": "error",
+        "no-mixed-spaces-and-tabs": "error",
+        "no-trailing-spaces": "error",
+        "no-var": "error",
+        "object-curly-spacing": ["error", "always"],
+        "no-alert": "error"
+    }
+}

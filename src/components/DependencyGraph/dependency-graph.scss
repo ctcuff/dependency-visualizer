@@ -1,0 +1,41 @@
+.dependency-graph {
+    height: 100%;
+}
+
+.no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+    img {
+        user-select: none;
+    }
+}
+
+.network-wrapper {
+    display: flex;
+    height: 100%;
+
+    .network {
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .loading-progress {
+        justify-self: center;
+        align-self: center;
+        width: 100%;
+        text-align: center;
+        margin: 0 4em;
+    }
+
+    .progress-title {
+        margin-top: 1em;
+        font-size: 1.2em;
+    }
+
+    *:focus {
+        outline: none;
+    }
+}

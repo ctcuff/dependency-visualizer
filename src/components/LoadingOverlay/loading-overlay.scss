@@ -1,0 +1,32 @@
+.loading-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    .loading-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .loading-text {
+        margin: 0 1em 0.4em 0;
+    }
+
+    .spinner {
+        align-self: center;
+    }
+
+    .loading-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+    }
+
+    p {
+        text-align: center;
+        margin: 0;
+    }
+}
