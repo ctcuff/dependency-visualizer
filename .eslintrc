@@ -7,6 +7,12 @@
         "no-trailing-spaces": "error",
         "no-var": "error",
         "object-curly-spacing": ["error", "always"],
-        "no-alert": "error"
+        "no-alert": "error",
+        "react/jsx-curly-spacing": ["error", {
+            "when": "never",
+            "children": {
+              "when": "never"
+            }
+        }]
     }
 }

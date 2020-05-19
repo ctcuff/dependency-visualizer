@@ -2,6 +2,7 @@
     "name": "npm-dependency-visualizer",
     "version": "0.1.0",
     "private": true,
+    "homepage": "https://ctcuff.github.io/dependency-visualizer",
     "dependencies": {
         "@ant-design/icons": "^4.1.0",
         "antd": "^4.2.3",
@@ -19,14 +20,14 @@
     },
     "scripts": {
         "dev": "react-scripts start",
-        "lint": "eslint ./src/**/*.js  --ignore-pattern node_modules/",
+        "lint": "eslint './src/**/*.js'",
         "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "deploy": "yarn build && gh-pages -d build"
     },
     "husky": {
         "hooks": {
-            "pre-commit": "yarn lint"
+            "pre-commit": "yarn lint",
+            "pre-push": "yarn lint"
         }
     },
     "browserslist": {
