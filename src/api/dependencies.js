@@ -63,6 +63,8 @@ const cacheDependencies = (packageName, dependencies) => {
         dependencies,
         storedAt: Date.now()
     }
+
+    localStorage.setItem('lastAccessed', Date.now())
     localStorage.setItem(CACHE_PREFIX + packageName, JSON.stringify(data))
 }
 
