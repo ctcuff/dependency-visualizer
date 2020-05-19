@@ -56,8 +56,6 @@ class Menu extends React.Component {
             popularity
         } = this.props.packageInfo
 
-        console.log({ stars, forks })
-
         const deps = Object.keys(dependencies)
 
         return (
@@ -148,7 +146,6 @@ class Menu extends React.Component {
                     collapsible
                     theme="light"
                     collapsedWidth={0}
-                    onBreakpoint={(a) => console.log(a)}
                     collapsed={this.state.isOpen}
                     className="menu"
                     width="22em"

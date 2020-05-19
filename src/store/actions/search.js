@@ -37,7 +37,6 @@ const searchPackage = query => {
                         const packageInfo = await API.getPackageInfo(query)
                         dispatch(setPackageInfo(packageInfo))
                     } catch (err) {
-                        console.error('Error fetching info', err)
                     }
 
                     dispatch(searchFinished())
