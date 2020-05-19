@@ -62,12 +62,10 @@ class Menu extends React.Component {
             <React.Fragment>
                 <div className="package-info-block">
                     <span className="label">Package</span>
-                    <Tooltip placement="topLeft" title={name}>
-                        <div className="dependency-info">
-                            <span className="dependency-name">{name}</span>
-                            <span>{version}</span>
-                        </div>
-                    </Tooltip>
+                    <div className="dependency-info package-name">
+                        <span className="dependency-name">{name}</span>
+                        <span>{version}</span>
+                    </div>
                 </div>
                 {description ? (
                     <div className="package-info-block">
@@ -119,7 +117,7 @@ class Menu extends React.Component {
                     <div className="package-info">
                         {deps.map(key => (
                             <Tooltip placement="topLeft" title={`search ${key}`} key={key}>
-                                <div  className="dependency-info" onClick={() => this.props.searchPackage(key)}>
+                                <div className="dependency-info" onClick={() => this.props.searchPackage(key)}>
                                     <span className="dependency-name">{key}</span>
                                     <span>{dependencies[key]}</span>
                                 </div>
@@ -141,7 +139,7 @@ class Menu extends React.Component {
                         size="large"
                         onClick={this.toggleMenu}
                     />
-                ): null}
+                ) : null}
                 <Sider
                     collapsible
                     theme="light"
