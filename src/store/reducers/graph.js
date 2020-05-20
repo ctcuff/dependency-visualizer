@@ -1,5 +1,4 @@
 import { UPDATE_GRAPH_DATA } from '../actions/types'
-import data from '../../test-data/express.json'
 
 const defaultOptions = {
     nodes: {

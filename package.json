@@ -26,7 +26,6 @@
         "vis-network": "^7.6.4"
     },
     "devDependencies": {
-        "axios": "^0.19.2",
         "gh-pages": "^2.2.0",
         "husky": "^4.2.5",
         "lint-staged": "^10.2.4",
