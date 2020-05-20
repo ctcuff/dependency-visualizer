@@ -1,4 +1,11 @@
-import { SEARCH, SEARCH_PROGRESS, SEARCH_FINISHED, SEARCH_ERROR } from '../actions/types'
+import {
+    SEARCH,
+    SEARCH_PROGRESS,
+    SEARCH_FINISHED,
+    SEARCH_ERROR,
+    SEARCH_UPDATE_CACHE_SIZE
+} from '../actions/types'
+import { getCacheSize } from '../../util/cache'
 
 const initialState = {
     isLoading: false,
@@ -6,7 +13,8 @@ const initialState = {
     packagesRemaining: 0,
     packagesLoaded: 0,
     currentPackageLoaded: '',
-    errorCode: null
+    errorCode: null,
+    cacheSize: getCacheSize()
 }
 
 const searchReducer = (state = initialState, action) => {
@@ -38,6 +46,11 @@ const searchReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 errorCode: action.errorCode
+            }
+        case SEARCH_UPDATE_CACHE_SIZE:
+            return {
+                ...state,
+                cacheSize: action.cacheSize
             }
         default:
             return state

@@ -1,9 +1,8 @@
 import { graphlib } from 'dagre'
+import { getDependenciesFromCache, cacheDependencies } from '../util/cache'
 
 const Graph = graphlib.Graph
 const noop = () => {}
-// Used to make sure there aren't any clashes in local storage
-const CACHE_PREFIX = '__DEP-CACHE:'
 
 const getDependencies = async (packageName, onProgressUpdate = noop) => {
     // Used to store dependencies so duplicate requests aren't made
@@ -57,27 +56,6 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
     onProgressUpdate(remaining.length, result.size)
 
     return root
-}
-
-const cacheDependencies = (packageName, dependencies) => {
-    const data = {
-        dependencies,
-        storedAt: Date.now()
-    }
-
-    localStorage.setItem('lastAccessed', Date.now())
-    localStorage.setItem(CACHE_PREFIX + packageName, JSON.stringify(data))
-}
-
-const getDependenciesFromCache = packageName => {
-    const cache = localStorage.getItem(CACHE_PREFIX + packageName)
-
-    if (cache) {
-        const dependencies = JSON.parse(cache).dependencies
-        return Array.from(dependencies)
-    }
-
-    return null
 }
 
 const getPackageDependencies = packageName => {
