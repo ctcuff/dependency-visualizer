@@ -1,0 +1,51 @@
+.package-info {
+    .stats-progress  {
+        margin-top: 1em;
+    }
+
+    .stats-divider {
+        height: 100%;
+        color: lightgrey;
+        width: 1px;
+    }
+
+    label {
+        color: #000000ab;
+        font-size: 1.1em;
+    }
+
+    .dependencies, .package-description {
+        margin-top: 0.8em;
+    }
+
+    .package-name {
+        margin-top: 0.8em;
+    }
+
+    .package-info-block {
+        margin-bottom: 2em;
+
+        .dependency-info {
+            display: flex;
+            width: 100%;
+            margin-bottom: 0.5em;
+            justify-content: space-between;
+            cursor: pointer;
+
+            .dependency-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 12em;
+            }
+        }
+    }
+
+    // Hack to decrease the size of the progress circles since
+    // antd sets it in a string
+    .ant-progress-inner {
+        height: 100px !important;
+        width: 100px !important;
+        font-size: 1.5em !important;
+    }
+}

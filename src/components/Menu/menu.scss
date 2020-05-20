@@ -2,105 +2,53 @@ $border-color: lightgrey;
 $border: 1px solid $border-color;
 $default-margin: 1.5em;
 
-.menu-open-btn {
-    position: absolute;
-    margin: 1em;
-    z-index: 2;
-}
 
 .menu {
-
-    .menu-close-btn {
-        width: 100%;
-        margin: 0;
-        border-right: none;
-        border-left: none;
-        box-shadow: none;
-        border-top: none;
+    .menu-open-btn {
+        position: absolute;
+        margin: 1em;
+        z-index: 2;
     }
 
-    border-right: $border;
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    // &:hover {
-    //     overflow-y: auto;
-    // }
-
-    .menu-content {
-        margin: $default-margin;
-        min-width: 15em;
-    }
-
-    .search-collapsed {
-        display: block;
-        margin-top: 1em;
-        font-size: 1.5em;
-    }
-
-    .stats {
-        margin: 1em 0;
-    }
-
-    .stats-progress  {
-        margin-top: 1em;
-    }
-
-    .stats-divider {
-        height: 100%;
-        color: $border-color;
-        width: 1px;
-    }
-
-    .divider {
-        border-color: $border-color;
-        border-width: 1px;
-    }
-
-    // Small hack to get a vertical divider
-    .col-divider {
-        border: 0.7px solid lightgrey;
-        transform: rotate(90deg) translateX(5px) scale(0.8);
-    }
-
-    .label {
-        color: #000000ab;
-        font-size: 1.1em;
-    }
-
-    .package-info {
-        margin-top: 0.8em;
-    }
-
-    .package-name {
-        margin-top: 0.8em;
-    }
-
-    .package-info-block {
-        margin-bottom: 2em;
-
-        .dependency-info {
-            display: flex;
+    .sider {
+        .menu-close-btn {
             width: 100%;
-            margin-bottom: 0.5em;
-            justify-content: space-between;
-            cursor: pointer;
-
-            .dependency-name {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 12em;
-            }
+            margin: 0;
+            border-right: none;
+            border-left: none;
+            box-shadow: none;
+            border-top: none;
         }
-    }
 
-    // Hack to decrease the size of the progress circles since
-    // antd sets it in a string
-    .ant-progress-inner {
-        height: 100px !important;
-        width: 100px !important;
-        font-size: 1.5em !important;
+        border-right: $border;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        .menu-content {
+            margin: $default-margin;
+            min-width: 15em;
+        }
+
+        .search-collapsed {
+            display: block;
+            margin-top: 1em;
+            font-size: 1.5em;
+        }
+
+        .stats {
+            margin: 1em 0;
+        }
+
+        .divider {
+            border-color: $border-color;
+            border-width: 1px;
+        }
+
+        // Small hack to get a vertical divider
+        .col-divider {
+            border: 0.7px solid lightgrey;
+            transform: rotate(90deg) translateX(5px) scale(0.8);
+        }
     }
 }
