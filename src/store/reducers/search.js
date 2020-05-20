@@ -1,4 +1,4 @@
-import { SEARCH, SEARCH_PROGRESS, SEARCH_FINISHED, SEARCH_ERROR } from "../actions/types"
+import { SEARCH, SEARCH_PROGRESS, SEARCH_FINISHED, SEARCH_ERROR } from '../actions/types'
 
 const initialState = {
     isLoading: false,

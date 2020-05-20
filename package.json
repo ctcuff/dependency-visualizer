@@ -3,6 +3,13 @@
     "version": "1.0.0",
     "private": true,
     "homepage": "https://ctcuff.github.io/dependency-visualizer",
+    "scripts": {
+        "dev": "react-scripts start",
+        "lint": "eslint './src/**/*.js'",
+        "build": "react-scripts build",
+        "deploy": "yarn build && gh-pages -d build",
+        "format": "prettier --write './src/**/*.js'"
+    },
     "dependencies": {
         "@ant-design/icons": "^4.1.0",
         "antd": "^4.2.3",
@@ -18,17 +25,24 @@
         "vis-data": "^6.5.2",
         "vis-network": "^7.6.4"
     },
-    "scripts": {
-        "dev": "react-scripts start",
-        "lint": "eslint './src/**/*.js'",
-        "build": "react-scripts build",
-        "deploy": "yarn build && gh-pages -d build"
+    "devDependencies": {
+        "axios": "^0.19.2",
+        "gh-pages": "^2.2.0",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.4",
+        "node-sass": "^4.14.1",
+        "prettier": "^2.0.5"
     },
     "husky": {
         "hooks": {
-            "pre-commit": "yarn lint",
-            "pre-push": "yarn lint"
+            "pre-commit": "lint-staged"
         }
+    },
+    "lint-staged": {
+        "./src/**/*.js": [
+            "prettier --write",
+            "yarn lint"
+        ]
     },
     "browserslist": {
         "production": [
@@ -41,11 +55,5 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    },
-    "devDependencies": {
-        "axios": "^0.19.2",
-        "gh-pages": "^2.2.0",
-        "husky": "^4.2.5",
-        "node-sass": "^4.14.1"
     }
 }

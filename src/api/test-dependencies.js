@@ -47,10 +47,11 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
     return root
 }
 
- // Gets the dependencies for a single package
+// Gets the dependencies for a single package
 const getPackageDependencies = packageName => {
     return new Promise((resolve, reject) => {
-        axios.get(`https://registry.npmjs.cf/${packageName}`)
+        axios
+            .get(`https://registry.npmjs.cf/${packageName}`)
             .then(res => res.data)
             .then(res => {
                 const latestVersion = res['dist-tags'].latest

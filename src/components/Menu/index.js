@@ -1,6 +1,16 @@
 import './menu.scss'
 import React from 'react'
-import { Layout, Input, Statistic, Row, Col, Divider, Button, Tooltip, Progress } from 'antd'
+import {
+    Layout,
+    Input,
+    Statistic,
+    Row,
+    Col,
+    Divider,
+    Button,
+    Tooltip,
+    Progress
+} from 'antd'
 import { SearchOutlined, MenuOutlined, LeftOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { searchPackage } from '../../store/actions/search'
@@ -75,18 +85,18 @@ class Menu extends React.Component {
                 ) : null}
                 {stars && forks ? (
                     <div className="package-info-block">
-                    <span className="label">Statistics</span>
-                    <Row className="stats" justify="center" align="center">
-                        <Col span={12}>
-                            <Statistic title="Stars" value={stars} />
-                        </Col>
-                        <Col span={12}>
-                            <Statistic title="Forks" value={forks} />
-                        </Col>
-                    </Row>
-                </div>
+                        <span className="label">Statistics</span>
+                        <Row className="stats" justify="center" align="center">
+                            <Col span={12}>
+                                <Statistic title="Stars" value={stars} />
+                            </Col>
+                            <Col span={12}>
+                                <Statistic title="Forks" value={forks} />
+                            </Col>
+                        </Row>
+                    </div>
                 ) : null}
-                 <div className="package-info-block">
+                <div className="package-info-block">
                     <Row className="stats" justify="center" align="center">
                         <Col span={12}>
                             <Statistic title="Dependents" value={dependents} />
@@ -101,13 +111,23 @@ class Menu extends React.Component {
                         <Col span={12}>
                             <div className="stats-score">
                                 <span className="label">Quality</span>
-                                <Progress type="circle" size="small" percent={quality} className="stats-progress" />
+                                <Progress
+                                    type="circle"
+                                    size="small"
+                                    percent={quality}
+                                    className="stats-progress"
+                                />
                             </div>
                         </Col>
                         <Col span={12}>
                             <div className="stats-score">
                                 <span className="label">Popularity</span>
-                                <Progress type="circle" size="small" percent={popularity} className="stats-progress" />
+                                <Progress
+                                    type="circle"
+                                    size="small"
+                                    percent={popularity}
+                                    className="stats-progress"
+                                />
                             </div>
                         </Col>
                     </Row>
@@ -116,8 +136,15 @@ class Menu extends React.Component {
                     <span className="label">Direct Dependencies: {deps.length}</span>
                     <div className="package-info">
                         {deps.map(key => (
-                            <Tooltip placement="topLeft" title={`search ${key}`} key={key}>
-                                <div className="dependency-info" onClick={() => this.props.searchPackage(key)}>
+                            <Tooltip
+                                placement="topLeft"
+                                title={`search ${key}`}
+                                key={key}
+                            >
+                                <div
+                                    className="dependency-info"
+                                    onClick={() => this.props.searchPackage(key)}
+                                >
                                     <span className="dependency-name">{key}</span>
                                     <span>{dependencies[key]}</span>
                                 </div>
@@ -168,11 +195,17 @@ class Menu extends React.Component {
                         </div>
                         <Row className="stats" justify="center" align="middle">
                             <Col span={8}>
-                                <Statistic title="Remaining" value={this.props.packagesRemaining} />
+                                <Statistic
+                                    title="Remaining"
+                                    value={this.props.packagesRemaining}
+                                />
                             </Col>
                             <Col span={8} className="col-divider" />
                             <Col span={8}>
-                                <Statistic title="Dependencies" value={this.props.packagesLoaded} />
+                                <Statistic
+                                    title="Dependencies"
+                                    value={this.props.packagesLoaded}
+                                />
                             </Col>
                         </Row>
                         <Divider type="horizontal" className="divider" />
@@ -195,7 +228,4 @@ const mapDispatchToProps = {
     searchPackage
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Menu)
+export default connect(mapStateToProps, mapDispatchToProps)(Menu)

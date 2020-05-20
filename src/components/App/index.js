@@ -2,7 +2,7 @@ import './App.scss'
 import React from 'react'
 import DependencyGraph from '../DependencyGraph'
 import LoadingOverlay from '../LoadingOverlay'
-import { Layout} from 'antd'
+import { Layout } from 'antd'
 import Menu from '../../components/Menu'
 import { connect } from 'react-redux'
 import ErrorOverlay from '../ErrorOverlay'
@@ -14,7 +14,7 @@ const App = props => (
         <Menu />
         <Layout className="content">
             <Content>
-                {(props.isLoading || props.errorCode) ? null : <DependencyGraph />}
+                {props.isLoading || props.errorCode ? null : <DependencyGraph />}
                 <LoadingOverlay />
                 <ErrorOverlay />
             </Content>

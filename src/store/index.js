@@ -12,9 +12,6 @@ const reducer = combineReducers({
     package: packageReducer
 })
 
-const store = createStore(
-    reducer,
-    storeEnhancers(applyMiddleware(thunk))
-)
+const store = createStore(reducer, storeEnhancers(applyMiddleware(thunk)))
 
 export default store

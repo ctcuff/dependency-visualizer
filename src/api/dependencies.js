@@ -6,7 +6,6 @@ const noop = () => {}
 const CACHE_PREFIX = '__DEP-CACHE:'
 
 const getDependencies = async (packageName, onProgressUpdate = noop) => {
-
     // Used to store dependencies so duplicate requests aren't made
     const seen = {}
     const result = new Set()
@@ -23,7 +22,7 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
 
         const deps = getDependenciesFromCache(name)
         const promises = []
-        const dependencies = deps || await getPackageDependencies(name)
+        const dependencies = deps || (await getPackageDependencies(name))
 
         seen[name] = true
 
@@ -38,11 +37,13 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
             // Add each dependency call to a promise stack so we
             // can make multiple requests instead of waiting
             // for each individual request to complete
-            promises.push(_getDependencies(dep).then(() => {
-                result.add(dep)
-                root.setEdge(name, dep)
-                remaining.pop()
-            }))
+            promises.push(
+                _getDependencies(dep).then(() => {
+                    result.add(dep)
+                    root.setEdge(name, dep)
+                    remaining.pop()
+                })
+            )
         }
 
         onProgressUpdate(remaining.length, result.size, name)

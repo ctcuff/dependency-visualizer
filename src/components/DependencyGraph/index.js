@@ -9,7 +9,6 @@ import { DataSet, Network } from 'vis-network/standalone'
 import { Progress, Empty, Typography } from 'antd'
 import image from '../../static/empty.png'
 
-
 const { Title } = Typography
 
 class DependencyGraph extends React.Component {
@@ -33,9 +32,11 @@ class DependencyGraph extends React.Component {
 
         // Watch a part of the store for changes in data
         // so we can reload the graph
-        this.unsubscribe = store.subscribe(watcher(newValue => {
-            this.updateGraph(newValue)
-        }))
+        this.unsubscribe = store.subscribe(
+            watcher(newValue => {
+                this.updateGraph(newValue)
+            })
+        )
     }
 
     componentWillUnmount() {
@@ -96,7 +97,7 @@ class DependencyGraph extends React.Component {
     }
 
     onStabilizationIterationsDone() {
-       this.setState({ graphLoadProgress: 100 })
+        this.setState({ graphLoadProgress: 100 })
     }
 
     renderEmpty() {
@@ -106,21 +107,16 @@ class DependencyGraph extends React.Component {
 
         return (
             <div className="no-data">
-                <Empty
-                    image={image}
-                    imageStyle={{ height: '12em' }}
-                    description={null}
-                >
+                <Empty image={image} imageStyle={{ height: '12em' }} description={null}>
                     <div>
                         <Title level={2}>No data to show</Title>
+                        <p>It's lookin' pretty empty in here.</p>
                         <p>
-                        It's lookin' pretty empty in here.
-                        </p>
-                        <p>
-                            Try searching for a package like "react" or "express". Although,
+                            Try searching for a package like "react" or "express".
+                            Although,
                             <br />
-                            that might be hard of you don't have hands. Or
-                            maybe you're a robot.
+                            that might be hard of you don't have hands. Or maybe you're a
+                            robot.
                             <br />
                             That's ok, I won't judge.
                         </p>
@@ -139,7 +135,7 @@ class DependencyGraph extends React.Component {
         return (
             <div className="dependency-graph">
                 <div className="network-wrapper" hidden={this.props.nodes.length === 0}>
-                    {(progress === 100 || isNaN(progress)) ? null : (
+                    {progress === 100 || isNaN(progress) ? null : (
                         <div className="loading-progress">
                             <Progress percent={progress} type="circle" />
                             <div className="progress-title">Rendering nodes...</div>
@@ -157,7 +153,7 @@ const mapStateToProps = state => ({
     options: state.graph.options,
     nodes: state.graph.data.nodes,
     edges: state.graph.data.edges,
-    rootNode: state.graph.data.rootNode,
+    rootNode: state.graph.data.rootNode
 })
 
 export default connect(mapStateToProps)(DependencyGraph)

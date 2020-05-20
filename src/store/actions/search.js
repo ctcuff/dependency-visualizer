@@ -28,25 +28,23 @@ const searchPackage = query => {
 
         // Not using catch here since errors in dispatch
         // might trigger the catch block
-        API.getDependencies(query, onProgressUpdate)
-            .then(
-                async graph => {
-                    const data = API.graphToJson(query, graph)
+        API.getDependencies(query, onProgressUpdate).then(
+            async graph => {
+                const data = API.graphToJson(query, graph)
 
-                    try {
-                        const packageInfo = await API.getPackageInfo(query)
-                        dispatch(setPackageInfo(packageInfo))
-                    } catch (err) {
-                    }
+                try {
+                    const packageInfo = await API.getPackageInfo(query)
+                    dispatch(setPackageInfo(packageInfo))
+                } catch (err) {}
 
-                    dispatch(searchFinished())
-                    dispatch(updateGraphData(data))
-                },
-                error => {
-                    dispatch(clearPackageInfo())
-                    dispatch(searchError(error))
-                }
-            )
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
+            },
+            error => {
+                dispatch(clearPackageInfo())
+                dispatch(searchError(error))
+            }
+        )
     }
 }
 

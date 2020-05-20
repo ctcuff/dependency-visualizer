@@ -23,14 +23,15 @@ const LoadingOverlay = props => {
         <div className="loading-overlay">
             <div className="loading-content-wrapper">
                 <div className="loading-container">
-                    <Title level={2} className="loading-text">Loading</Title>
-                    <Spin size={"large"} className="spinner"/>
+                    <Title level={2} className="loading-text">
+                        Loading
+                    </Title>
+                    <Spin size={'large'} className="spinner" />
                 </div>
                 <p>
                     {!props.currentPackage
                         ? messages[Math.floor(Math.random() * messages.length)]
-                        : `loading dependencies for ${props.currentPackage}`
-                    }
+                        : `loading dependencies for ${props.currentPackage}`}
                 </p>
             </div>
         </div>
