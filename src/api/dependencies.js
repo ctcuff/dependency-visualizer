@@ -159,7 +159,7 @@ const graphToJson = (packageName, graph) => {
     })
 
     return {
-        rootNode: packageName,
+        rootNodeId: packageName,
         nodes,
         edges
     }

@@ -1,5 +1,5 @@
 {
-    "rootNode":"express",
+    "rootNodeId":"express",
     "nodes":[
        {
           "id":"express",

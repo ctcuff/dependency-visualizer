@@ -7,6 +7,14 @@
     justify-content: center;
     align-items: center;
     height: 90%;
+    // Keeps the content in the container from being
+    // squished together when the menu is opened
+    // min-width: 100vw;
+
+    .message {
+        width: 50%;
+        margin: 0 auto;
+    }
 
     img {
         user-select: none;
@@ -23,12 +31,17 @@
         width: 100vw;
     }
 
-    .loading-progress {
+    .progress-wrapper {
         justify-self: center;
         align-self: center;
         width: 100%;
         text-align: center;
         margin: 0 4em;
+
+        .progress {
+            font-size: 3em;
+            color: #595959;
+        }
     }
 
     .progress-title {
