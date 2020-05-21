@@ -1,4 +1,4 @@
-# [NPM Dependency Visualizer](https://ctcuff.github.io/dependency-visualizer/)
+# NPM Dependency Visualizer
 
 <img width="1440" alt="node-dependencies" src="https://user-images.githubusercontent.com/7400747/82351818-17819300-99cb-11ea-83bb-431e44b97b55.png">
 
