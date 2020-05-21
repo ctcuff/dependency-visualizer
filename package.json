@@ -5,11 +5,10 @@
     "homepage": "https://ctcuff.github.io/dependency-visualizer",
     "scripts": {
         "dev": "react-scripts start",
+        "build": "react-scripts build",
         "lint": "yarn lint:js && yarn lint:scss",
         "lint:js": "eslint './src/**/*.js'",
         "lint:scss": "stylelint './src/**/*.scss'",
-        "build": "react-scripts build",
-        "deploy": "yarn build && gh-pages -d build",
         "format": "prettier --write './src/**/*{.js,.scss}'",
         "format:js": "prettier --write './src/**/*.js'",
         "format:scss": "prettier --write './src/**/*.scss'"
