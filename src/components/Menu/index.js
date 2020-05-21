@@ -139,6 +139,7 @@ class Menu extends React.Component {
                                 <small>
                                     Clear cache: {this.props.cacheSize.toFixed(2)} KB
                                 </small>
+                                <small>{localStorage.length} entries</small>
                             </div>
                         </Popconfirm>
                     </div>

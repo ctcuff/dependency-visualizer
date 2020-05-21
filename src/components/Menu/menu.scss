@@ -1,7 +1,4 @@
 $border-color: lightgrey;
-$border: 1px solid $border-color;
-$default-margin: 1.5em;
-
 
 .menu {
     .menu-open-btn {
@@ -16,7 +13,6 @@ $default-margin: 1.5em;
     }
 
     .sider {
-
         .menu-close-btn {
             width: 100%;
             margin: 0;
@@ -26,13 +22,13 @@ $default-margin: 1.5em;
             border-top: none;
         }
 
-        border-right: $border;
+        border-right: 1px solid $border-color;
         height: 100vh;
         overflow-y: auto;
         overflow-x: hidden;
 
         .menu-content {
-            margin: $default-margin;
+            margin: 1.5em;
             min-width: 15em;
             height: 100%;
             display: flex;
@@ -48,6 +44,8 @@ $default-margin: 1.5em;
         .clear-cache {
             cursor: pointer;
             padding-bottom: 0.5em;
+            display: flex;
+            justify-content: space-between;
         }
 
         .search-collapsed {
@@ -68,7 +66,7 @@ $default-margin: 1.5em;
 
         // Small hack to get a vertical divider
         .col-divider {
-            border: 0.7px solid lightgrey;
+            border: 0.7px solid $border-color;
             transform: rotate(90deg) translateX(5px) scale(0.8);
         }
     }
