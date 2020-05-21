@@ -1,12 +1,12 @@
 .package-info {
-    .stats-progress  {
+    .stats-progress {
         margin-top: 1em;
     }
 
     .stats-divider {
         height: 100%;
         color: lightgrey;
-        width: 1px;
+        width: 1px; // stylelint-disable-line
     }
 
     label {
@@ -14,7 +14,8 @@
         font-size: 1.1em;
     }
 
-    .dependencies, .package-description {
+    .dependencies,
+    .package-description {
         margin-top: 0.8em;
     }
 
@@ -44,8 +45,8 @@
     // Hack to decrease the size of the progress circles since
     // antd sets it in a string
     .ant-progress-inner {
-        height: 100px !important;
-        width: 100px !important;
+        height: 100px !important; // stylelint-disable-line
+        width: 100px !important; // stylelint-disable-line
         font-size: 1.5em !important;
     }
 }

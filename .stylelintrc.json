@@ -1,0 +1,14 @@
+{
+    "extends": "stylelint-config-standard",
+    "rules": {
+        "indentation": 4,
+        "unit-blacklist": [
+            "px",
+            {
+                "ignoreProperties": {
+                    "px": ["/^border/", "/^transform/", "/box-shadow/"]
+                }
+            }
+        ]
+    }
+}
