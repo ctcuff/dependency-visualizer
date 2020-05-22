@@ -29,9 +29,9 @@ const LoadingOverlay = props => {
                     <Spin size={'large'} className="spinner" />
                 </div>
                 <p>
-                    {!props.currentPackage
+                    {!props.currentPackageLoaded
                         ? messages[Math.floor(Math.random() * messages.length)]
-                        : `loading dependencies for ${props.currentPackage}`}
+                        : `loading dependencies for ${props.currentPackageLoaded}`}
                 </p>
             </div>
         </div>
@@ -40,7 +40,7 @@ const LoadingOverlay = props => {
 
 const mapStateToProps = state => ({
     isLoading: state.search.isLoading,
-    currentPackage: state.search.currentPackageLoaded
+    currentPackageLoaded: state.search.currentPackageLoaded
 })
 
 export default connect(mapStateToProps)(LoadingOverlay)
