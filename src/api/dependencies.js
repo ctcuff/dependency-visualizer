@@ -37,6 +37,7 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
             // can make multiple requests instead of waiting
             // for each individual request to complete
             promises.push(
+                // TODO: Don't push the result if it's an error
                 _getDependencies(dep).then(() => {
                     result.add(dep)
                     root.setEdge(name, dep)

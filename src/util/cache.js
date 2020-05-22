@@ -7,19 +7,30 @@ const cacheDependencies = (packageName, dependencies) => {
         storedAt: Date.now()
     }
 
-    localStorage.setItem('lastAccessed', Date.now())
-    localStorage.setItem(packageName, JSON.stringify(data))
+    try {
+        localStorage.setItem('lastAccessed', Date.now())
+        localStorage.setItem(packageName, JSON.stringify(data))
+    } catch (err) {
+        clearHalfCache()
+        store.dispatch(updateCacheSize(localStorage.length))
+    }
 }
 
 const getDependenciesFromCache = packageName => {
     const cache = localStorage.getItem(packageName)
 
-    if (cache) {
-        const dependencies = JSON.parse(cache).dependencies
-        return Array.from(dependencies)
+    if (!cache) {
+        return null
     }
 
-    return null
+    try {
+        const dependencies = JSON.parse(cache).dependencies
+        return Array.from(dependencies)
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.err('Error parsing cache', err)
+        return null
+    }
 }
 
 /**
@@ -46,6 +57,37 @@ const clearCache = () => {
     store.dispatch(updateCacheSize(0))
 
     return length
+}
+
+/**
+ * Removes the oldest half of the cache. Useful for when the cache gets
+ * full but we don't want to completely empty it
+ */
+const clearHalfCache = () => {
+    const cache = []
+
+    for (const key in localStorage) {
+        let item = localStorage.getItem(key)
+
+        if (item && item.includes('dependencies')) {
+            try {
+                item = JSON.parse(item)
+                cache.push({
+                    key,
+                    storedAt: item.storedAt
+                })
+            } catch (err) {
+                // eslint-disable-next-line no-console
+                console.err('Error retrieving dependency from cache', err)
+            }
+        }
+    }
+
+    cache.sort((a, b) => a.storedAt - b.storedAt)
+
+    for (let i = 0; i < Math.ceil(cache.length / 2); i++) {
+        localStorage.removeItem(cache[i].key)
+    }
 }
 
 export { cacheDependencies, getDependenciesFromCache, getCacheSize, clearCache }
