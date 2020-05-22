@@ -21,20 +21,36 @@ import { connect } from 'react-redux'
 import { searchPackage } from '../../store/actions/search'
 import PackageInfo from '../PackageInfo'
 import { clearCache } from '../../util/cache'
+import debounce from '../../util/debounce'
 
 const { Sider } = Layout
+
+// The width (in px) needed before the
+// menu takes up the entire screen
+const MOBILE_BREAKPOINT = 650
 
 class Menu extends React.Component {
     constructor(props) {
         super(props)
+        this.menuRef = React.createRef()
 
         this.state = {
-            isOpen: false
+            isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
+            isMobile: window.innerWidth <= MOBILE_BREAKPOINT
         }
 
         this.onSearch = this.onSearch.bind(this)
         this.toggleMenu = this.toggleMenu.bind(this)
         this.clearCache = this.clearCache.bind(this)
+        this.onResize = debounce(this.onResize.bind(this), 500)
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize', this.onResize)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize)
     }
 
     toggleMenu() {
@@ -60,11 +76,15 @@ class Menu extends React.Component {
         message.success(`Cleared ${itemsCleared} entries`)
     }
 
+    onResize() {
+        this.setState({ isMobile: window.innerWidth <= MOBILE_BREAKPOINT })
+    }
+
     render() {
         const isCacheEmpty = this.props.cacheSize === 0
 
         return (
-            <div className="menu">
+            <div className="menu" ref={ref => (this.menuRef = ref)}>
                 {this.state.isOpen ? (
                     <Button
                         className="menu-open-btn"
@@ -79,7 +99,8 @@ class Menu extends React.Component {
                     collapsedWidth={0}
                     collapsed={this.state.isOpen}
                     className="sider"
-                    width="22em"
+                    width={this.state.isMobile ? '100vw' : '22em'}
+                    trigger={null}
                 >
                     <Button
                         size="large"
@@ -100,17 +121,16 @@ class Menu extends React.Component {
                             />
                         </div>
                         <Row className="stats" justify="center" align="middle">
-                            <Col span={8}>
+                            <Col span={12}>
+                                <Statistic
+                                    title="All Dependencies"
+                                    value={this.props.packagesLoaded}
+                                />
+                            </Col>
+                            <Col span={12} className="stat-remaining">
                                 <Statistic
                                     title="Remaining"
                                     value={this.props.packagesRemaining}
-                                />
-                            </Col>
-                            <Col span={8} className="col-divider" />
-                            <Col span={8}>
-                                <Statistic
-                                    title="Dependencies"
-                                    value={this.props.packagesLoaded}
                                 />
                             </Col>
                         </Row>
@@ -119,7 +139,6 @@ class Menu extends React.Component {
                             packageInfo={this.props.packageInfo}
                             onDependencyClick={this.props.searchPackage}
                         />
-                        <div className="spacer" />
                         <Popconfirm
                             icon={
                                 <DeleteOutlined

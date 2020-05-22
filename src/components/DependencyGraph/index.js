@@ -100,10 +100,7 @@ class DependencyGraph extends React.Component {
 
     onStabilizationIterationsDone() {
         this.setState({ graphLoadProgress: 100 })
-
-        if (this.dataset.nodes.length >= MAX_NODE_LIMIT) {
-            this.network.setOptions({ physics: false })
-        }
+        this.network.setOptions({ physics: false })
     }
 
     highlightChildren(params) {

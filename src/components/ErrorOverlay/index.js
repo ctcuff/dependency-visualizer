@@ -18,16 +18,13 @@ const ErrorOverlay = props => {
                     <Title level={2}>Module not found</Title>
                     <p>
                         We searched through time and space but couldn't find the module
-                        you're looking for.
+                        you were looking for.
                     </p>
-                    <p>
+                    <p className="message">
                         Check your spelling and try again. Not trying to make you feel bad
-                        or anything, but hey,
-                        <br />
-                        we all make mistakes. I can't tell you how many times I've
-                        misspelled Wednesday.
-                        <br />
-                        Am I the only person who has to sound it out?
+                        or anything, but hey, we all make mistakes. I can't tell you how
+                        many times I've misspelled Wednesday. Am I the only person who has
+                        to sound it out?
                     </p>
                 </div>
             </Empty>

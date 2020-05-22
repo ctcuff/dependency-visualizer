@@ -2,7 +2,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 95%;
+    height: 95vh;
+
+    .message {
+        width: 50%;
+        margin: 0 auto;
+    }
 
     img {
         user-select: none;

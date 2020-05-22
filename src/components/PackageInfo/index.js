@@ -39,7 +39,7 @@ const PackageInfo = props => {
             {stars && forks ? (
                 <div className="package-info-block">
                     <span className="label">Statistics</span>
-                    <Row className="stats" justify="center" align="center">
+                    <Row justify="center" align="center" className="github-stats">
                         <Col span={12}>
                             <Statistic title="Stars" value={stars} />
                         </Col>
@@ -50,7 +50,7 @@ const PackageInfo = props => {
                 </div>
             ) : null}
             <div className="package-info-block">
-                <Row className="stats" justify="center" align="center">
+                <Row justify="center" align="center">
                     <Col span={12}>
                         <Statistic title="Dependents" value={dependents} />
                     </Col>
@@ -60,7 +60,7 @@ const PackageInfo = props => {
                 </Row>
             </div>
             <div className="package-info-block">
-                <Row className="stats" justify="center" align="center" gutter={32}>
+                <Row justify="center" align="center" gutter={32}>
                     <Col span={12}>
                         <div className="stats-score">
                             <span className="label">Quality</span>
@@ -68,6 +68,7 @@ const PackageInfo = props => {
                                 type="circle"
                                 size="small"
                                 percent={quality}
+                                format={percent => '' + percent}
                                 className="stats-progress"
                             />
                         </div>
@@ -79,6 +80,7 @@ const PackageInfo = props => {
                                 type="circle"
                                 size="small"
                                 percent={popularity}
+                                format={percent => '' + percent}
                                 className="stats-progress"
                             />
                         </div>

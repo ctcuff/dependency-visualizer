@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 90%;
+    height: 90vh;
     // Keeps the content in the container from being
     // squished together when the menu is opened
     // min-width: 100vw;
@@ -23,7 +23,7 @@
 
 .network-wrapper {
     display: flex;
-    height: 100%;
+    height: 100vh;
 
     .network {
         position: fixed;
