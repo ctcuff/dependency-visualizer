@@ -68,7 +68,7 @@ const PackageInfo = props => {
                                 type="circle"
                                 size="small"
                                 percent={quality}
-                                format={percent => '' + percent}
+                                format={percent => `${percent}%`}
                                 className="stats-progress"
                             />
                         </div>
@@ -80,7 +80,7 @@ const PackageInfo = props => {
                                 type="circle"
                                 size="small"
                                 percent={popularity}
-                                format={percent => '' + percent}
+                                format={percent => `${percent}%`}
                                 className="stats-progress"
                             />
                         </div>
