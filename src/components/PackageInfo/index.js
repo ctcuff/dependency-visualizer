@@ -1,11 +1,38 @@
 import './package-info.scss'
 import React from 'react'
 import { Row, Col, Progress, Statistic } from 'antd'
+import { connect } from 'react-redux'
 
 const PackageInfo = props => {
+    if (props.isLoading) {
+        return (
+            <div className="package-info-status">
+                Loading details for {props.searchQuery}...
+            </div>
+        )
+    }
+
+    if (props.errorCode) {
+        let message = ''
+
+        switch (props.errorCode) {
+            // 400 occurs when a user searches for a packages
+            // with invalid characters
+            case 400:
+            case 404:
+                message = `No details found for ${props.searchQuery}`
+                break
+            default:
+                message = `An error ocurred while loading details for ${props.searchQuery}`
+        }
+
+        return <div className="package-info-status">{message}</div>
+    }
+
     if (!props.packageInfo) {
         return null
     }
+
     const {
         name,
         description,
@@ -108,4 +135,11 @@ const PackageInfo = props => {
     )
 }
 
-export default PackageInfo
+const mapStateToProps = state => ({
+    isLoading: state.package.isLoading,
+    packageInfo: state.package.packageInfo,
+    errorCode: state.package.errorCode,
+    searchQuery: state.search.searchQuery
+})
+
+export default connect(mapStateToProps)(PackageInfo)

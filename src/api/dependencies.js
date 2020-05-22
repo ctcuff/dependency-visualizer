@@ -68,7 +68,7 @@ const getPackageDependencies = packageName => {
             return
         }
 
-        fetch(`https://registry.npmjs.cf/${packageName}`)
+        fetch(`https://registry.npmjs.cf/${encodeURIComponent(packageName)}`)
             .then(res => {
                 if (res.status !== 200) {
                     return Promise.reject(res.status)
@@ -82,20 +82,6 @@ const getPackageDependencies = packageName => {
 
                 resolve(dependencies)
             })
-            .catch(err => reject(err))
-    })
-}
-
-const getPackageInfo = packageName => {
-    return new Promise((resolve, reject) => {
-        fetch(`https://api.npms.io/v2/package/${packageName}`)
-            .then(res => {
-                if (res.status !== 200) {
-                    return Promise.reject(res.status)
-                }
-                return res.json()
-            })
-            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 }
@@ -168,7 +154,6 @@ const graphToJson = (packageName, graph) => {
 
 const API = {
     getDependencies,
-    getPackageInfo,
     graphToJson
 }
 

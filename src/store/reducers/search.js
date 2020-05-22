@@ -1,5 +1,5 @@
 import {
-    SEARCH,
+    SEARCH_STARTED,
     SEARCH_PROGRESS,
     SEARCH_FINISHED,
     SEARCH_ERROR,
@@ -19,7 +19,7 @@ const initialState = {
 
 const searchReducer = (state = initialState, action) => {
     switch (action.type) {
-        case SEARCH:
+        case SEARCH_STARTED:
             return {
                 ...state,
                 isLoading: true,

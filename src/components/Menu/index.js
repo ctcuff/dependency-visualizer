@@ -64,7 +64,7 @@ class Menu extends React.Component {
             return
         }
 
-        this.props.searchPackage(searchQuery)
+        this.props.searchPackage(searchQuery.trim())
     }
 
     clearCache() {
@@ -135,10 +135,7 @@ class Menu extends React.Component {
                             </Col>
                         </Row>
                         <Divider type="horizontal" className="divider" />
-                        <PackageInfo
-                            packageInfo={this.props.packageInfo}
-                            onDependencyClick={this.props.searchPackage}
-                        />
+                        <PackageInfo onDependencyClick={this.props.searchPackage} />
                         <Popconfirm
                             icon={
                                 <DeleteOutlined
@@ -172,8 +169,7 @@ const mapStateToProps = state => ({
     isLoading: state.search.isLoading,
     packagesLoaded: state.search.packagesLoaded,
     packagesRemaining: state.search.packagesRemaining,
-    cacheSize: state.search.cacheSize,
-    packageInfo: state.package.packageInfo
+    cacheSize: state.search.cacheSize
 })
 
 const mapDispatchToProps = {

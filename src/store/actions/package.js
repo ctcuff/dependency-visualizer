@@ -1,4 +1,9 @@
-import { SET_PACKAGE_INFO, CLEAR_PACKAGE_INFO } from './types'
+import {
+    SET_PACKAGE_INFO,
+    CLEAR_PACKAGE_INFO,
+    PACKAGE_INFO_ERROR,
+    PACKAGE_INFO_SEARCH_START
+} from './types'
 
 const setPackageInfo = data => {
     let stars = null
@@ -30,6 +35,38 @@ const setPackageInfo = data => {
     }
 }
 
+const searchStart = () => ({
+    type: PACKAGE_INFO_SEARCH_START
+})
+
+const packageInfoError = errorCode => ({
+    type: PACKAGE_INFO_ERROR,
+    errorCode
+})
+
+const getPackageInfo = packageName => {
+    return dispatch => {
+        dispatch(searchStart())
+
+        fetch(`https://api.npms.io/v2/package/${encodeURIComponent(packageName)}`).then(
+            async res => {
+                if (res.status !== 200) {
+                    dispatch(packageInfoError(res.status))
+                    return
+                }
+                const data = await res.json()
+                dispatch(setPackageInfo(data))
+            },
+            error => {
+                // eslint-disable-next-line no-console
+                console.error(error)
+                // Some unknown error occurred
+                dispatch(packageInfoError(-1))
+            }
+        )
+    }
+}
+
 const clearPackageInfo = () => ({ type: CLEAR_PACKAGE_INFO })
 
-export { setPackageInfo, clearPackageInfo }
+export { setPackageInfo, clearPackageInfo, getPackageInfo }

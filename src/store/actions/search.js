@@ -1,17 +1,18 @@
 import {
-    SEARCH,
+    SEARCH_STARTED,
     SEARCH_PROGRESS,
     SEARCH_FINISHED,
     SEARCH_ERROR,
     SEARCH_UPDATE_CACHE_SIZE
 } from './types'
 import { updateGraphData } from './graph'
-import { setPackageInfo, clearPackageInfo } from './package'
+import { clearPackageInfo, getPackageInfo } from './package'
 import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
 
-const searchStart = () => ({
-    type: SEARCH
+const searchStart = query => ({
+    type: SEARCH_STARTED,
+    query
 })
 
 const searchFinished = () => ({
@@ -37,8 +38,9 @@ const updateSearchProgress = (packagesRemaining, packagesLoaded, packageName) =>
 
 const searchPackage = query => {
     return dispatch => {
-        dispatch(searchStart())
         dispatch(clearPackageInfo())
+        dispatch(searchStart(query))
+        dispatch(getPackageInfo(query))
 
         const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
             dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
@@ -50,14 +52,6 @@ const searchPackage = query => {
             .then(
                 async graph => {
                     const data = API.graphToJson(query, graph)
-
-                    // Query the npms api for detailed info about
-                    // this package
-                    try {
-                        const packageInfo = await API.getPackageInfo(query)
-                        dispatch(setPackageInfo(packageInfo))
-                    } catch (err) {}
-
                     dispatch(searchFinished())
                     dispatch(updateGraphData(data))
                 },
