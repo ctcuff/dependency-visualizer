@@ -105,6 +105,7 @@ class DependencyGraph extends React.Component {
 
     highlightChildren(params) {
         const nodes = this.dataset.nodes.get({ returnType: 'Object' })
+        const edges = this.dataset.edges.get({ returnType: 'Object' })
         const defaultColor = '#86b3fb'
         const selectedNodeColor = '#1c51a0'
         const inactiveColor = 'rgba(150, 150, 150, 0.25)'
@@ -129,16 +130,30 @@ class DependencyGraph extends React.Component {
                 }
             }
 
-            const connectedNodes = this.network.getConnectedNodes(selectedNode)
+            for (const id in edges) {
+                edges[id].hidden = false
+            }
+
+            const connectedNodes = this.network.getConnectedNodes(selectedNode, 'to')
 
             // Give color/label back to the children of the selected node
             for (let i = 0; i < connectedNodes.length; i++) {
                 nodes[connectedNodes[i]].color = selectedNodeColor
-
                 if (nodes[connectedNodes[i]].hiddenLabel !== undefined) {
                     nodes[connectedNodes[i]].label = nodes[connectedNodes[i]].hiddenLabel
                     nodes[connectedNodes[i]].hiddenLabel = undefined
                 }
+            }
+
+            // Show edges that go from the selected node to its children
+            for (const id in edges) {
+                if (
+                    edges[id].from === selectedNode &&
+                    connectedNodes.includes(edges[id].to)
+                ) {
+                    continue
+                }
+                edges[id].hidden = true
             }
 
             // Give color/label back to the selected node
@@ -150,7 +165,8 @@ class DependencyGraph extends React.Component {
                 nodes[selectedNode].hiddenLabel = undefined
             }
         } else if (this.state.isHighlightActive) {
-            // Reset the color and label of all nodes
+            // Reset the color and label of all
+            // nodes/edges when the graph is clicked
             for (const id in nodes) {
                 nodes[id].color = defaultColor
 
@@ -164,10 +180,15 @@ class DependencyGraph extends React.Component {
                     nodes[id].hiddenLabel = undefined
                 }
             }
+
+            for (const id in edges) {
+                edges[id].hidden = false
+            }
             this.setState({ isHighlightActive: false })
         }
 
         const updatedNodes = []
+        const updatedEdges = []
 
         for (const id in nodes) {
             if (nodes.hasOwnProperty(id)) {
@@ -175,7 +196,14 @@ class DependencyGraph extends React.Component {
             }
         }
 
+        for (const id in edges) {
+            if (edges.hasOwnProperty(id)) {
+                updatedEdges.push(edges[id])
+            }
+        }
+
         this.dataset.nodes.update(updatedNodes)
+        this.dataset.edges.update(updatedEdges)
         this.network.redraw()
     }
 
