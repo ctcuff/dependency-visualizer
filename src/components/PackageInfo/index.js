@@ -3,6 +3,124 @@ import React from 'react'
 import { Row, Col, Progress, Statistic } from 'antd'
 import { connect } from 'react-redux'
 
+const PackageLinks = props => {
+    if (!props.links) {
+        return null
+    }
+
+    const links = []
+
+    for (const key in props.links) {
+        links.push(
+            <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={props.links[key]}
+                className="package-link"
+                title={key}
+            >
+                {props.links[key]}
+            </a>
+        )
+    }
+
+    return (
+        <div className="package-info-block">
+            <span className="label">Links</span>
+            <div className="links-container">
+                {links.map((item, index) => (
+                    <React.Fragment key={index}>{item}</React.Fragment>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const GitHubStats = props =>
+    !props.stars || !props.forks ? null : (
+        <div className="package-info-block">
+            <span className="label">Statistics</span>
+            <Row justify="center" align="center" className="github-stats">
+                <Col span={12}>
+                    <Statistic title="Stars" value={props.stars} />
+                </Col>
+                <Col span={12}>
+                    <Statistic title="Forks" value={props.forks} />
+                </Col>
+            </Row>
+        </div>
+    )
+
+const DownloadStats = props =>
+    !props.downloads || !props.dependents ? null : (
+        <div className="package-info-block">
+            <Row justify="center" align="center">
+                <Col span={12}>
+                    <Statistic title="Dependents" value={props.dependents} />
+                </Col>
+                <Col span={12}>
+                    <Statistic title="Downloads" value={props.downloads} />
+                </Col>
+            </Row>
+        </div>
+    )
+
+const QualityStats = props =>
+    !props.quality || !props.popularity ? null : (
+        <div className="package-info-block">
+            <Row justify="center" align="center" gutter={32}>
+                <Col span={12}>
+                    <div className="stats-score">
+                        <span className="label">Quality</span>
+                        <Progress
+                            type="circle"
+                            size="small"
+                            width={100}
+                            percent={props.quality}
+                            format={percent => `${percent}%`}
+                            className="stats-progress"
+                        />
+                    </div>
+                </Col>
+                <Col span={12}>
+                    <div className="stats-score">
+                        <span className="label">Popularity</span>
+                        <Progress
+                            type="circle"
+                            size="small"
+                            width={100}
+                            percent={props.popularity}
+                            format={percent => `${percent}%`}
+                            className="stats-progress"
+                        />
+                    </div>
+                </Col>
+            </Row>
+        </div>
+    )
+
+const Dependencies = props => {
+    const deps = Object.keys(props.dependencies)
+
+    return (
+        <div className="package-info-block">
+            <span className="label">Direct Dependencies: {deps.length}</span>
+            <div className="dependencies">
+                {deps.map(key => (
+                    <div
+                        key={key}
+                        className="dependency-info"
+                        onClick={() => props.onDependencyClick(key)}
+                    >
+                        <span className="dependency-name">{key}</span>
+                        <span>{props.dependencies[key]}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 const PackageInfo = props => {
     if (props.isLoading) {
         return (
@@ -43,10 +161,9 @@ const PackageInfo = props => {
         stars,
         forks,
         quality,
-        popularity
+        popularity,
+        links
     } = props.packageInfo
-
-    const deps = Object.keys(dependencies)
 
     return (
         <div className="package-info">
@@ -63,74 +180,14 @@ const PackageInfo = props => {
                     <p className="package-description">{description}</p>
                 </div>
             ) : null}
-            {stars && forks ? (
-                <div className="package-info-block">
-                    <span className="label">Statistics</span>
-                    <Row justify="center" align="center" className="github-stats">
-                        <Col span={12}>
-                            <Statistic title="Stars" value={stars} />
-                        </Col>
-                        <Col span={12}>
-                            <Statistic title="Forks" value={forks} />
-                        </Col>
-                    </Row>
-                </div>
-            ) : null}
-            <div className="package-info-block">
-                <Row justify="center" align="center">
-                    <Col span={12}>
-                        <Statistic title="Dependents" value={dependents} />
-                    </Col>
-                    <Col span={12}>
-                        <Statistic title="Downloads" value={downloads} />
-                    </Col>
-                </Row>
-            </div>
-            <div className="package-info-block">
-                <Row justify="center" align="center" gutter={32}>
-                    <Col span={12}>
-                        <div className="stats-score">
-                            <span className="label">Quality</span>
-                            <Progress
-                                type="circle"
-                                size="small"
-                                width={100}
-                                percent={quality}
-                                format={percent => `${percent}%`}
-                                className="stats-progress"
-                            />
-                        </div>
-                    </Col>
-                    <Col span={12}>
-                        <div className="stats-score">
-                            <span className="label">Popularity</span>
-                            <Progress
-                                type="circle"
-                                size="small"
-                                width={100}
-                                percent={popularity}
-                                format={percent => `${percent}%`}
-                                className="stats-progress"
-                            />
-                        </div>
-                    </Col>
-                </Row>
-            </div>
-            <div className="package-info-block">
-                <span className="label">Direct Dependencies: {deps.length}</span>
-                <div className="dependencies">
-                    {deps.map(key => (
-                        <div
-                            key={key}
-                            className="dependency-info"
-                            onClick={() => props.onDependencyClick(key)}
-                        >
-                            <span className="dependency-name">{key}</span>
-                            <span>{dependencies[key]}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <PackageLinks links={links} />
+            <GitHubStats stars={stars} forks={forks} />
+            <DownloadStats downloads={downloads} dependents={dependents} />
+            <QualityStats quality={quality} popularity={popularity} />
+            <Dependencies
+                dependencies={dependencies}
+                onDependencyClick={props.onDependencyClick}
+            />
         </div>
     )
 }

@@ -1,3 +1,5 @@
+$link-color: #1d51a0;
+
 .package-info-status {
     margin: 1em 0 2em 0;
 }
@@ -27,6 +29,18 @@
         margin-top: 0.8em;
     }
 
+    .links-container {
+        margin-top: 0.8em;
+
+        .package-link {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: $link-color;
+        }
+    }
+
     .package-info-block {
         margin-bottom: 2em;
 
@@ -42,6 +56,10 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 12em;
+
+                &:hover {
+                    color: $link-color;
+                }
             }
         }
 

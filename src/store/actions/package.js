@@ -8,6 +8,7 @@ import {
 const setPackageInfo = data => {
     let stars = null
     let forks = null
+    let links = {}
     const metadata = data.collected.metadata
     const { name, description, version, dependencies } = metadata
     const { downloadsCount, dependentsCount } = data.evaluation.popularity
@@ -16,6 +17,10 @@ const setPackageInfo = data => {
     if (data.collected.github) {
         stars = data.collected.github.starsCount
         forks = data.collected.github.forksCount
+    }
+
+    if (data.collected.metadata.links) {
+        links = data.collected.metadata.links
     }
 
     return {
@@ -30,7 +35,8 @@ const setPackageInfo = data => {
             stars,
             forks,
             quality: Math.round(quality * 100),
-            popularity: Math.round(popularity * 100)
+            popularity: Math.round(popularity * 100),
+            links
         }
     }
 }
