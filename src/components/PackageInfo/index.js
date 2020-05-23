@@ -39,7 +39,7 @@ const PackageLinks = props => {
 }
 
 const GitHubStats = props =>
-    !props.stars || !props.forks ? null : (
+    props.stars === null || props.forks === null ? null : (
         <div className="package-info-block">
             <span className="label">Statistics</span>
             <Row justify="center" align="center" className="github-stats">
@@ -54,7 +54,7 @@ const GitHubStats = props =>
     )
 
 const DownloadStats = props =>
-    !props.downloads || !props.dependents ? null : (
+    props.downloads === null || props.dependents === null ? null : (
         <div className="package-info-block">
             <Row justify="center" align="center">
                 <Col span={12}>
@@ -68,7 +68,7 @@ const DownloadStats = props =>
     )
 
 const QualityStats = props =>
-    !props.quality || !props.popularity ? null : (
+    props.quality === null || props.popularity === null ? null : (
         <div className="package-info-block">
             <Row justify="center" align="center" gutter={32}>
                 <Col span={12}>
