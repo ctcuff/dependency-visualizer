@@ -56,7 +56,6 @@ const searchPackage = query => {
                     dispatch(updateGraphData(data))
                 },
                 error => {
-                    dispatch(clearPackageInfo())
                     dispatch(searchError(error))
                 }
             )

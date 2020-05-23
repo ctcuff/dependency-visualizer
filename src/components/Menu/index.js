@@ -37,7 +37,8 @@ class Menu extends React.Component {
 
         this.state = {
             isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
-            isMobile: window.innerWidth <= MOBILE_BREAKPOINT
+            isMobile: window.innerWidth <= MOBILE_BREAKPOINT,
+            searchQuery: ''
         }
 
         this.onSearch = this.onSearch.bind(this)
@@ -59,13 +60,14 @@ class Menu extends React.Component {
     }
 
     onSearch(event) {
-        const searchQuery = event.target.value
+        const searchQuery = event.target.value.trim()
 
-        if (!searchQuery.trim()) {
+        if (!searchQuery || searchQuery === this.state.searchQuery) {
             return
         }
 
         this.props.searchPackage(searchQuery.trim())
+        this.setState({ searchQuery })
     }
 
     clearCache() {

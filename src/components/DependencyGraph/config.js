@@ -54,11 +54,7 @@ const optimizedOptions = {
         size: 12,
         scaling: {
             min: 10,
-            max: 30,
-            label: {
-                maxVisible: 20,
-                drawThreshold: 0
-            }
+            max: 30
         }
     },
     layout: {
