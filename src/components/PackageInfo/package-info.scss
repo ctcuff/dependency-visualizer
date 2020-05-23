@@ -37,12 +37,31 @@ $link-color: #1d51a0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin: 0.5em 0;
             color: $link-color;
         }
     }
 
     .package-info-block {
         margin-bottom: 2em;
+
+        .dependencies-collapse {
+            background-color: white;
+        }
+
+        .dependencies-collapse-panel {
+            border: none;
+            padding: 0;
+
+            .ant-collapse-header {
+                padding: 0.75em 2.5em 1em 0;
+                color: rgba(0, 0, 0, 0.65);
+            }
+
+            .ant-collapse-content-box {
+                padding: 0;
+            }
+        }
 
         .dependency-info {
             display: flex;

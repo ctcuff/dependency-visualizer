@@ -1,7 +1,9 @@
 import './package-info.scss'
 import React from 'react'
-import { Row, Col, Progress, Statistic } from 'antd'
+import { Row, Col, Progress, Statistic, Collapse } from 'antd'
 import { connect } from 'react-redux'
+
+const { Panel } = Collapse
 
 const PackageLinks = props => {
     if (!props.links) {
@@ -104,19 +106,27 @@ const Dependencies = props => {
 
     return (
         <div className="package-info-block">
-            <span className="label">Direct Dependencies: {deps.length}</span>
-            <div className="dependencies">
-                {deps.map(key => (
-                    <div
-                        key={key}
-                        className="dependency-info"
-                        onClick={() => props.onDependencyClick(key)}
-                    >
-                        <span className="dependency-name">{key}</span>
-                        <span>{props.dependencies[key]}</span>
-                    </div>
-                ))}
-            </div>
+            <Collapse
+                bordered={false}
+                className="dependencies-collapse"
+                expandIconPosition="right"
+            >
+                <Panel
+                    header={`Direct Dependencies: ${deps.length}`}
+                    className="dependencies-collapse-panel"
+                >
+                    {deps.map(key => (
+                        <div
+                            key={key}
+                            className="dependency-info"
+                            onClick={() => props.onDependencyClick(key)}
+                        >
+                            <span className="dependency-name">{key}</span>
+                            <span>{props.dependencies[key]}</span>
+                        </div>
+                    ))}
+                </Panel>
+            </Collapse>
         </div>
     )
 }
@@ -134,7 +144,7 @@ const PackageInfo = props => {
         let message = ''
 
         switch (props.errorCode) {
-            // 400 occurs when a user searches for a packages
+            // 400 occurs when a user searches for a package
             // with invalid characters
             case 400:
             case 404:
