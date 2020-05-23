@@ -15,7 +15,8 @@ import {
     SearchOutlined,
     MenuOutlined,
     LeftOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    GithubFilled
 } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { searchPackage } from '../../store/actions/search'
@@ -151,13 +152,27 @@ class Menu extends React.Component {
                             cancelText="Cancel"
                             onConfirm={this.clearCache}
                         >
-                            <div className="clear-cache">
+                            <div className="menu-footer">
                                 <small>
                                     Clear cache: {this.props.cacheSize.toFixed(2)} KB
                                 </small>
                                 <small>{localStorage.length} entries</small>
                             </div>
                         </Popconfirm>
+                        <div className="menu-footer">
+                            <small>
+                                <a
+                                    href="https://github.com/ctcuff/dependency-visualizer"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    View source on GitHub
+                                </a>
+                            </small>
+                            <small>
+                                <GithubFilled />
+                            </small>
+                        </div>
                     </div>
                 </Sider>
             </div>
