@@ -1,6 +1,8 @@
 $border-color: lightgrey;
 
 .menu {
+    z-index: 3;
+
     .menu-open-btn {
         position: absolute;
         margin: 1em;

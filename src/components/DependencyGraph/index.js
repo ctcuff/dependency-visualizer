@@ -6,7 +6,8 @@ import store from '../../store'
 import { connect } from 'react-redux'
 import deepEqual from 'deep-equal'
 import { DataSet, Network } from 'vis-network/standalone'
-import { Empty, Typography } from 'antd'
+import { Empty, Typography, Button, Tooltip } from 'antd'
+import { SyncOutlined } from '@ant-design/icons'
 import { optimizedOptions } from './config'
 import image from '../../static/empty.png'
 
@@ -21,6 +22,7 @@ class DependencyGraph extends React.Component {
         super(props)
 
         this.containerRef = React.createRef()
+        this.centerButtonRef = React.createRef()
 
         this.network = null
         this.dataset = {
@@ -32,13 +34,16 @@ class DependencyGraph extends React.Component {
             graphLoadProgress: 0,
             nodesLoaded: 0,
             nodesRemaining: 0,
-            isHighlightActive: false
+            isHighlightActive: false,
+            graphPosition: null,
+            graphScale: null
         }
 
         this.onStabilizationProgress = this.onStabilizationProgress.bind(this)
         this.onStabilizationIterationsDone = this.onStabilizationIterationsDone.bind(this)
         this.renderEmpty = this.renderEmpty.bind(this)
         this.highlightChildren = this.highlightChildren.bind(this)
+        this.recenterGraph = this.recenterGraph.bind(this)
 
         const watcher = watch(store.getState, 'graph.data', deepEqual)
 
@@ -65,9 +70,15 @@ class DependencyGraph extends React.Component {
 
         this.network = new Network(container, this.dataset, this.props.options)
 
-        this.network.on('click', this.highlightChildren)
+        // Triggered when the graph starts trying to render nodes
         this.network.on('stabilizationProgress', this.onStabilizationProgress)
+
+        // Triggered when the graph finishes rendering
         this.network.on('stabilizationIterationsDone', this.onStabilizationIterationsDone)
+
+        this.network.on('dragStart', this.toggleCenterButton.bind(this, false))
+        this.network.on('dragEnd', this.toggleCenterButton.bind(this, true))
+        this.network.on('click', this.highlightChildren)
     }
 
     updateGraph(data) {
@@ -99,8 +110,28 @@ class DependencyGraph extends React.Component {
     }
 
     onStabilizationIterationsDone() {
-        this.setState({ graphLoadProgress: 100 })
+        this.setState({
+            graphLoadProgress: 100,
+            graphPosition: this.network.getViewPosition(),
+            graphScale: this.network.getScale()
+        })
         this.network.setOptions({ physics: false })
+    }
+
+    recenterGraph() {
+        if (!this.state.graphPosition || !this.state.graphScale) {
+            return
+        }
+
+        this.network.moveTo({
+            position: this.state.graphPosition,
+            scale: this.state.graphScale
+        })
+    }
+
+    toggleCenterButton(show) {
+        const centerButton = ReactDOM.findDOMNode(this.centerButtonRef)
+        centerButton.style.display = show ? '' : 'none'
     }
 
     highlightChildren(params) {
@@ -134,6 +165,7 @@ class DependencyGraph extends React.Component {
                 edges[id].hidden = false
             }
 
+            // Get all nodes going from the selected node to its children
             const connectedNodes = this.network.getConnectedNodes(selectedNode, 'to')
 
             // Give color/label back to the children of the selected node
@@ -230,17 +262,28 @@ class DependencyGraph extends React.Component {
     }
 
     render() {
-        const progress = this.state.graphLoadProgress
+        const { graphLoadProgress, graphPosition, graphScale } = this.state
 
         // Set the dependency graph to hidden so that vis can
         // still find the graph element when there is no data
         // to show
         return (
             <div className="dependency-graph">
+                {graphLoadProgress < 100 || !graphPosition || !graphScale ? null : (
+                    <Tooltip placement="topRight" title="Recenter graph">
+                        <Button
+                            icon={<SyncOutlined />}
+                            size="large"
+                            className="recenter-btn"
+                            onClick={this.recenterGraph}
+                            ref={ref => (this.centerButtonRef = ref)}
+                        />
+                    </Tooltip>
+                )}
                 <div className="network-wrapper" hidden={this.props.nodes.length === 0}>
-                    {progress === 100 ? null : (
+                    {graphLoadProgress === 100 ? null : (
                         <div className="progress-wrapper">
-                            <div className="progress">{progress}%</div>
+                            <div className="progress">{graphLoadProgress}%</div>
                             <div className="progress-title">Rendering nodes...</div>
                         </div>
                     )}
