@@ -56,6 +56,8 @@ const searchPackage = query => {
                     dispatch(updateGraphData(data))
                 },
                 error => {
+                    // eslint-disable-next-line no-console
+                    console.error(error)
                     dispatch(searchError(error))
                 }
             )

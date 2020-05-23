@@ -12,11 +12,11 @@ const noop = () => {}
  * @param {Function} onProgressUpdate
  */
 const getDependencies = async (packageName, onProgressUpdate = noop) => {
-    const exists = await doesPackageExist(packageName)
-
     // Since getPackageDependencies doesn't fail when it receives
     // a 404, we need to check if the package actually exists first
-    if (exists) {
+    const exists = await doesPackageExist(packageName)
+
+    if (!exists) {
         throw new Error('Not found')
     }
 
@@ -46,7 +46,6 @@ const getDependencies = async (packageName, onProgressUpdate = noop) => {
             dependencies = res.dependencies
         }
 
-        console.log(dependencies)
         // const deps = getDependenciesFromCache(name)
         const promises = []
         // const res = deps || (await getPackageDependencies(name))
@@ -88,7 +87,7 @@ const doesPackageExist = packageName => {
     return new Promise(resolve => {
         fetch(`https://registry.npmjs.cf/${encodeURIComponent(packageName)}`)
             .then(res => resolve(res.status === 200))
-            .err(() => resolve(false))
+            .catch(() => resolve(false))
     })
 }
 
