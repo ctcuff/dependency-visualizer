@@ -76,8 +76,12 @@ class DependencyGraph extends React.Component {
         // Triggered when the graph finishes rendering
         this.network.on('stabilizationIterationsDone', this.onStabilizationIterationsDone)
 
+        this.network.on('hold', this.toggleCenterButton.bind(this, false))
         this.network.on('dragStart', this.toggleCenterButton.bind(this, false))
+
+        this.network.on('release', this.toggleCenterButton.bind(this, true))
         this.network.on('dragEnd', this.toggleCenterButton.bind(this, true))
+
         this.network.on('click', this.highlightChildren)
     }
 
@@ -115,6 +119,10 @@ class DependencyGraph extends React.Component {
             graphPosition: this.network.getViewPosition(),
             graphScale: this.network.getScale()
         })
+
+        // Disabling physics after the graph renders lets us
+        // keep the graphs layout, but prevents nodes from
+        // moving when other nodes are dragged
         this.network.setOptions({ physics: false })
     }
 

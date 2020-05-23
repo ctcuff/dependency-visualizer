@@ -37,7 +37,7 @@ const defaultOptions = {
         stabilization: {
             enabled: true,
             iterations: 500,
-            updateInterval: 100
+            updateInterval: 1
         }
     },
     interaction: {
@@ -54,11 +54,7 @@ const optimizedOptions = {
         size: 12,
         scaling: {
             min: 10,
-            max: 30,
-            // label: {
-            //     maxVisible: 20,
-            //     drawThreshold: 0
-            // }
+            max: 30
         }
     },
     layout: {
@@ -88,6 +84,9 @@ const optimizedOptions = {
             centralGravity: 0.005,
             springLength: 230,
             springConstant: 0.18
+        },
+        stabilization: {
+            updateInterval: 1
         }
     },
     interaction: {

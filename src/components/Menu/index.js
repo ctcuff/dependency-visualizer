@@ -15,7 +15,8 @@ import {
     SearchOutlined,
     MenuOutlined,
     LeftOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    GithubFilled
 } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { searchPackage } from '../../store/actions/search'
@@ -37,7 +38,8 @@ class Menu extends React.Component {
 
         this.state = {
             isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
-            isMobile: window.innerWidth <= MOBILE_BREAKPOINT
+            isMobile: window.innerWidth <= MOBILE_BREAKPOINT,
+            searchQuery: ''
         }
 
         this.onSearch = this.onSearch.bind(this)
@@ -60,13 +62,14 @@ class Menu extends React.Component {
     }
 
     onSearch(event) {
-        const searchQuery = event.target.value
+        const searchQuery = event.target.value.trim()
 
-        if (!searchQuery.trim()) {
+        if (!searchQuery || searchQuery === this.state.searchQuery) {
             return
         }
 
         this.props.searchPackage(searchQuery.trim())
+        this.setState({ searchQuery })
     }
 
     clearCache() {
@@ -99,7 +102,7 @@ class Menu extends React.Component {
                 cancelText="Cancel"
                 onConfirm={this.clearCache}
             >
-                <div className="clear-cache">
+                <div className="menu-footer">
                     <small>Clear cache: {this.props.cacheSize.toFixed(2)} KB</small>
                     <small>{localStorage.length} entries</small>
                 </div>
@@ -162,6 +165,20 @@ class Menu extends React.Component {
                         <Divider type="horizontal" className="divider" />
                         <PackageInfo onDependencyClick={this.props.searchPackage} />
                         {this.renderConfirmPopper()}
+                        <div className="menu-footer">
+                            <small>
+                                <a
+                                    href="https://github.com/ctcuff/dependency-visualizer"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    View source on GitHub
+                                </a>
+                            </small>
+                            <small>
+                                <GithubFilled />
+                            </small>
+                        </div>
                         <Upload />
                     </div>
                 </Sider>

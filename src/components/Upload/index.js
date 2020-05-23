@@ -25,7 +25,7 @@ class Upload extends React.Component {
     }
 
     readFile() {
-        if (!this.inputRef.files) {
+        if (!this.inputRef.files || !this.inputRef.files[0]) {
             return
         }
 
@@ -66,6 +66,7 @@ class Upload extends React.Component {
                 <input
                     hidden
                     type="file"
+                    accept="application/JSON"
                     ref={ref => (this.inputRef = ref)}
                     onChange={this.readFile}
                 />

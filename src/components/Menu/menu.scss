@@ -46,11 +46,19 @@ $border-color: lightgrey;
             }
         }
 
-        .clear-cache {
+        .menu-footer {
             cursor: pointer;
-            padding-bottom: 2em;
+            padding-bottom: 1em;
             display: flex;
             justify-content: space-between;
+
+            small {
+                font-size: 0.85em;
+            }
+
+            a {
+                color: #1d51a0;
+            }
         }
 
         .search-collapsed {

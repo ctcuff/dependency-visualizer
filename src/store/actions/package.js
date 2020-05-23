@@ -46,7 +46,13 @@ const setPackageInfoFromJson = json => ({
     packageInfo: {
         name: json.name,
         version: json.version,
-        dependencies: json.dependencies
+        dependencies: json.dependencies,
+        stars: null,
+        forks: null,
+        quality: null,
+        popularity: null,
+        downloads: null,
+        dependents: null
     }
 })
 
