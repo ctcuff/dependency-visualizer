@@ -41,6 +41,15 @@ const setPackageInfo = data => {
     }
 }
 
+const setPackageInfoFromJson = json => ({
+    type: SET_PACKAGE_INFO,
+    packageInfo: {
+        name: json.name,
+        version: json.version,
+        dependencies: json.dependencies
+    }
+})
+
 const searchStart = () => ({
     type: PACKAGE_INFO_SEARCH_START
 })
@@ -75,4 +84,4 @@ const getPackageInfo = packageName => {
 
 const clearPackageInfo = () => ({ type: CLEAR_PACKAGE_INFO })
 
-export { setPackageInfo, clearPackageInfo, getPackageInfo }
+export { setPackageInfo, clearPackageInfo, getPackageInfo, setPackageInfoFromJson }

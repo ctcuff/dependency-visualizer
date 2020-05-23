@@ -6,7 +6,7 @@ import {
     SEARCH_UPDATE_CACHE_SIZE
 } from './types'
 import { updateGraphData } from './graph'
-import { clearPackageInfo, getPackageInfo } from './package'
+import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
 import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
 
@@ -66,4 +66,34 @@ const searchPackage = query => {
     }
 }
 
-export { searchPackage, updateCacheSize }
+const getDependenciesFromJsonFile = (json) => {
+    return dispatch => {
+        dispatch(clearPackageInfo())
+        dispatch(searchStart())
+
+        const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
+            dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
+        }
+
+        // Not using catch here since errors in dispatch
+        // might trigger the catch block
+        API.getDependenciesFromFile(json.name, Object.keys(json.dependencies), onProgressUpdate)
+            .then(
+                async graph => {
+                    const data = API.graphToJson(json.name, graph)
+                    dispatch(searchFinished())
+                    dispatch(updateGraphData(data))
+                    dispatch(setPackageInfoFromJson(json))
+                },
+                error => {
+                    console.error(error)
+                    dispatch(searchError(error))
+                }
+            )
+            .finally(() => {
+                dispatch(updateCacheSize(getCacheSize()))
+            })
+    }
+}
+
+export { searchPackage, updateCacheSize, getDependenciesFromJsonFile }

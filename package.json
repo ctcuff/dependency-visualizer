@@ -25,6 +25,7 @@
         "redux": "^4.0.5",
         "redux-thunk": "^2.3.0",
         "redux-watch": "^1.1.1",
+        "semver": "^7.3.2",
         "vis-data": "^6.5.2",
         "vis-network": "^7.6.4"
     },

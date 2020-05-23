@@ -55,17 +55,17 @@ const optimizedOptions = {
         scaling: {
             min: 10,
             max: 30,
-            label: {
-                maxVisible: 20,
-                drawThreshold: 0
-            }
+            // label: {
+            //     maxVisible: 20,
+            //     drawThreshold: 0
+            // }
         }
     },
     layout: {
         improvedLayout: false
     },
     edges: {
-        width: 0.5,
+        width: 0.15,
         arrows: {
             to: {
                 enabled: true,

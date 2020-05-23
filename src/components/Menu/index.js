@@ -22,6 +22,7 @@ import { searchPackage } from '../../store/actions/search'
 import PackageInfo from '../PackageInfo'
 import { clearCache } from '../../util/cache'
 import debounce from '../../util/debounce'
+import Upload from '../Upload'
 
 const { Sider } = Layout
 
@@ -43,6 +44,7 @@ class Menu extends React.Component {
         this.toggleMenu = this.toggleMenu.bind(this)
         this.clearCache = this.clearCache.bind(this)
         this.onResize = debounce(this.onResize.bind(this), 500)
+        this.renderConfirmPopper = this.renderConfirmPopper.bind(this)
     }
 
     componentDidMount() {
@@ -80,9 +82,32 @@ class Menu extends React.Component {
         this.setState({ isMobile: window.innerWidth <= MOBILE_BREAKPOINT })
     }
 
-    render() {
+    renderConfirmPopper() {
         const isCacheEmpty = this.props.cacheSize === 0
 
+        return (
+            <Popconfirm
+                icon={
+                    <DeleteOutlined style={{ color: isCacheEmpty ? 'green' : 'red' }} />
+                }
+                title={
+                    isCacheEmpty
+                        ? 'Nothing here yet. We cache packages to speed up load times.'
+                        : 'Are you sure? Loading may be slower.'
+                }
+                placement="topLeft"
+                cancelText="Cancel"
+                onConfirm={this.clearCache}
+            >
+                <div className="clear-cache">
+                    <small>Clear cache: {this.props.cacheSize.toFixed(2)} KB</small>
+                    <small>{localStorage.length} entries</small>
+                </div>
+            </Popconfirm>
+        )
+    }
+
+    render() {
         return (
             <div className="menu" ref={ref => (this.menuRef = ref)}>
                 {this.state.isOpen ? (
@@ -136,28 +161,8 @@ class Menu extends React.Component {
                         </Row>
                         <Divider type="horizontal" className="divider" />
                         <PackageInfo onDependencyClick={this.props.searchPackage} />
-                        <Popconfirm
-                            icon={
-                                <DeleteOutlined
-                                    style={{ color: isCacheEmpty ? 'green' : 'red' }}
-                                />
-                            }
-                            title={
-                                isCacheEmpty
-                                    ? 'Nothing here yet. We cache packages to speed up load times.'
-                                    : 'Are you sure? Loading may be slower.'
-                            }
-                            placement="topLeft"
-                            cancelText="Cancel"
-                            onConfirm={this.clearCache}
-                        >
-                            <div className="clear-cache">
-                                <small>
-                                    Clear cache: {this.props.cacheSize.toFixed(2)} KB
-                                </small>
-                                <small>{localStorage.length} entries</small>
-                            </div>
-                        </Popconfirm>
+                        {this.renderConfirmPopper()}
+                        <Upload />
                     </div>
                 </Sider>
             </div>
