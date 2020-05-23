@@ -164,6 +164,7 @@ class Menu extends React.Component {
                         </Row>
                         <Divider type="horizontal" className="divider" />
                         <PackageInfo onDependencyClick={this.props.searchPackage} />
+                        <Upload />
                         {this.renderConfirmPopper()}
                         <div className="menu-footer">
                             <small>
@@ -179,7 +180,6 @@ class Menu extends React.Component {
                                 <GithubFilled />
                             </small>
                         </div>
-                        <Upload />
                     </div>
                 </Sider>
             </div>

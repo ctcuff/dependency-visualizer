@@ -9,9 +9,9 @@ $link-color: #1d51a0;
         margin-top: 1em;
     }
 
-    .stats-divider {
-        height: 100%;
-        color: lightgrey;
+    .package-info-divider {
+        margin-top: 1em;
+        border-color: lightgrey;
         width: 1px; // stylelint-disable-line
     }
 
@@ -20,7 +20,6 @@ $link-color: #1d51a0;
         font-size: 1.1em;
     }
 
-    .dependencies,
     .package-description {
         margin-top: 0.8em;
     }
@@ -43,7 +42,13 @@ $link-color: #1d51a0;
     }
 
     .package-info-block {
-        margin-bottom: 2em;
+        &:not(.dependencies) {
+            margin-bottom: 1.5em;
+        }
+
+        .dependencies {
+            margin-bottom: 1em;
+        }
 
         .dependencies-collapse {
             background-color: white;

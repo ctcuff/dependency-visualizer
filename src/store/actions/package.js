@@ -41,20 +41,33 @@ const setPackageInfo = data => {
     }
 }
 
-const setPackageInfoFromJson = json => ({
-    type: SET_PACKAGE_INFO,
-    packageInfo: {
-        name: json.name,
-        version: json.version,
-        dependencies: json.dependencies,
-        stars: null,
-        forks: null,
-        quality: null,
-        popularity: null,
-        downloads: null,
-        dependents: null
+const setPackageInfoFromJson = json => {
+    const { name, version, dependencies, description, homepage } = json
+    let links = null
+
+    if (homepage) {
+        links = {
+            homepage: json.homepage
+        }
     }
-})
+
+    return {
+        type: SET_PACKAGE_INFO,
+        packageInfo: {
+            name,
+            version: version || 'Unknown',
+            dependencies,
+            description,
+            links,
+            stars: null,
+            forks: null,
+            quality: null,
+            popularity: null,
+            downloads: null,
+            dependents: null
+        }
+    }
+}
 
 const searchStart = () => ({
     type: PACKAGE_INFO_SEARCH_START

@@ -62,7 +62,7 @@ class Upload extends React.Component {
         }
 
         return (
-            <React.Fragment>
+            <div className="upload">
                 <input
                     hidden
                     type="file"
@@ -77,7 +77,7 @@ class Upload extends React.Component {
                 >
                     Upload package.json
                 </Button>
-            </React.Fragment>
+            </div>
         )
     }
 }

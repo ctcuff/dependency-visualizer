@@ -1,6 +1,6 @@
 import './package-info.scss'
 import React from 'react'
-import { Row, Col, Progress, Statistic, Collapse } from 'antd'
+import { Row, Col, Progress, Statistic, Collapse, Divider } from 'antd'
 import { connect } from 'react-redux'
 
 const { Panel } = Collapse
@@ -105,7 +105,7 @@ const Dependencies = props => {
     const deps = Object.keys(props.dependencies)
 
     return (
-        <div className="package-info-block">
+        <div className="package-info-block dependencies">
             <Collapse
                 bordered={false}
                 className="dependencies-collapse"
@@ -198,6 +198,7 @@ const PackageInfo = props => {
                 dependencies={dependencies}
                 onDependencyClick={props.onDependencyClick}
             />
+            <Divider className="package-info-divider" />
         </div>
     )
 }
