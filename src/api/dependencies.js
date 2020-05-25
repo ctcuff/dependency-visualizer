@@ -38,11 +38,7 @@ const getDependencies = async (packageName, onProgressUpdate) => {
  * @param {String[]} dependencies
  * @param {Function} onProgressUpdate
  */
-const getDependenciesFromFile = async (
-    packageName,
-    dependencies,
-    onProgressUpdate
-) => {
+const getDependenciesFromFile = async (packageName, dependencies, onProgressUpdate) => {
     const root = new Graph({ directed: true })
     const result = new Set()
 

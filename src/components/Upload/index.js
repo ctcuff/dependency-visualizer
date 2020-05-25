@@ -2,11 +2,9 @@ import './upload.scss'
 import React from 'react'
 import { Button, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import semver from 'semver'
 import { connect } from 'react-redux'
 import { getDependenciesFromJsonFile } from '../../store/actions/search'
-import { setPackageInfo } from '../../store/actions/package'
-import { searchStart, searchFinished } from '../../store/actions/search'
+import { searchStart, searchFinished, searchError } from '../../store/actions/search'
 
 class Upload extends React.Component {
     constructor(props) {
@@ -17,6 +15,7 @@ class Upload extends React.Component {
         this.readFile = this.readFile.bind(this)
         this.uploadStart = this.uploadStart.bind(this)
         this.onFileLoaded = this.onFileLoaded.bind(this)
+        this.onError = this.onError.bind(this)
 
         if (window.FileReader) {
             this.fileReader = new FileReader()
@@ -28,29 +27,38 @@ class Upload extends React.Component {
     }
 
     uploadStart() {
-        console.log('Load started')
         this.props.searchStart()
     }
 
+    onError(err) {
+        // eslint-disable-next-line no-console
+        console.error(err)
+        message.error('Error reading file')
+        this.props.searchError(-1)
+    }
+
     onFileLoaded() {
-        // Reset the input value so users can upload the same
-        // file multiple times
+        // Reset the input value so users can
+        // upload the same file multiple times
         this.inputRef.value = null
 
         const content = this.fileReader.result
 
         try {
             const json = JSON.parse(content)
-            console.log(JSON.stringify(json.dependencies, null, 3))
+
             if (!json.dependencies) {
-                message.info('package.json file has no dependencies block')
-                return
+                throw new Error('This file has no dependencies field')
             }
+
+            if (!json.name) {
+                throw new Error('This file must have a name field')
+            }
+
             this.props.getDependenciesFromJsonFile(json)
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error(err)
-            message.error('Error parsing file')
+            message.error(err.message)
+            this.props.searchFinished()
         }
     }
 
@@ -59,15 +67,12 @@ class Upload extends React.Component {
             return
         }
 
-        this.fileReader.readAsText(this.inputRef.files[0])
         this.fileReader.onloadstart = this.uploadStart
         this.fileReader.onloadend = this.uploadEnd
         this.fileReader.onload = this.onFileLoaded
+        this.fileReader.onerror = this.onError
 
-        this.fileReader.onerror = err => {
-            console.error(err)
-            message.error('Error reading file')
-        }
+        this.fileReader.readAsText(this.inputRef.files[0])
     }
 
     render() {
@@ -84,11 +89,7 @@ class Upload extends React.Component {
                     ref={ref => (this.inputRef = ref)}
                     onChange={this.readFile}
                 />
-                <Button
-                    icon={<UploadOutlined />}
-                    onClick={this.triggerUpload}
-                    // disabled={this.props.isLoading || this.props.isGraphRendering}
-                >
+                <Button icon={<UploadOutlined />} onClick={this.triggerUpload}>
                     Upload package.json
                 </Button>
             </div>
@@ -96,15 +97,11 @@ class Upload extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    isGraphRendering: state.graph.isRendering,
-    isLoading: state.search.isLoading
-})
-
 const mapDispatchToProps = {
     getDependenciesFromJsonFile,
     searchStart,
-    searchFinished
+    searchFinished,
+    searchError
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Upload)
+export default connect(null, mapDispatchToProps)(Upload)
