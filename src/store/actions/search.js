@@ -9,22 +9,29 @@ import { updateGraphData } from './graph'
 import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
 import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
+import debounce from '../../util/debounce'
 
-const searchStart = query => ({
-    type: SEARCH_STARTED,
-    query
-})
+const searchStart = query => {
+    console.log('Search started')
+    return {
+        type: SEARCH_STARTED,
+        query
+    }
+}
 
-const searchFinished = () => ({
-    type: SEARCH_FINISHED
-})
+const searchFinished = () => {
+    console.log('Search finishe')
+    return {
+        type: SEARCH_FINISHED
+    }
+}
 
 const searchError = errorCode => ({
     type: SEARCH_ERROR,
     errorCode
 })
 
-const updateCacheSize = cacheSize => ({
+const updateCacheSize = () => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
     cacheSize: getCacheSize()
 })
@@ -62,23 +69,25 @@ const searchPackage = query => {
                 }
             )
             .finally(() => {
-                dispatch(updateCacheSize(getCacheSize()))
+                dispatch(updateCacheSize())
             })
     }
 }
 
-const getDependenciesFromJsonFile = (json) => {
+const getDependenciesFromJsonFile = json => {
     return dispatch => {
         dispatch(clearPackageInfo())
-        dispatch(searchStart())
+        dispatch(searchStart(json.name))
 
         const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
             dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
         }
 
+        const dependencies = Object.keys(json.dependencies)
+
         // Not using catch here since errors in dispatch
         // might trigger the catch block
-        API.getDependenciesFromFile(json.name, Object.keys(json.dependencies), onProgressUpdate)
+        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
             .then(
                 async graph => {
                     const data = API.graphToJson(json.name, graph)
@@ -87,14 +96,15 @@ const getDependenciesFromJsonFile = (json) => {
                     dispatch(setPackageInfoFromJson(json))
                 },
                 error => {
+                    // eslint-disable-next-line no-console
                     console.error(error)
                     dispatch(searchError(error))
                 }
             )
             .finally(() => {
-                dispatch(updateCacheSize(getCacheSize()))
+                dispatch(updateCacheSize())
             })
     }
 }
 
-export { searchPackage, updateCacheSize, getDependenciesFromJsonFile }
+export { searchPackage, updateCacheSize, getDependenciesFromJsonFile, searchStart, searchFinished }

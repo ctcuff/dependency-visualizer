@@ -12,7 +12,7 @@ const cacheDependencies = (packageName, dependencies) => {
         localStorage.setItem(packageName, JSON.stringify(data))
     } catch (err) {
         clearHalfCache()
-        store.dispatch(updateCacheSize(localStorage.length))
+        store.dispatch(updateCacheSize())
     }
 }
 
@@ -54,7 +54,7 @@ const clearCache = () => {
     const length = localStorage.length
 
     localStorage.clear()
-    store.dispatch(updateCacheSize(0))
+    store.dispatch(updateCacheSize())
 
     return length
 }

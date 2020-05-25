@@ -44,12 +44,13 @@ const getDependenciesFromFile = async (
     onProgressUpdate
 ) => {
     const root = new Graph({ directed: true })
+    const result = new Set()
 
     root.setNode(packageName)
 
     for (let i = 0; i < dependencies.length; i++) {
         root.setEdge(packageName, dependencies[i])
-        await _getDependencies(dependencies[i], root, onProgressUpdate)
+        await _getDependencies(dependencies[i], root, onProgressUpdate, result)
     }
 
     return root
@@ -59,9 +60,9 @@ const _getDependencies = async (
     name,
     root,
     onProgressUpdate = noop,
+    result = new Set(),
     seen = {},
-    remaining = [],
-    result = new Set()
+    remaining = []
 ) => {
     // Don't load modules that have already been requested
     if (seen[name]) {
@@ -94,7 +95,7 @@ const _getDependencies = async (
         // can make multiple requests instead of waiting
         // for each individual request to complete
         promises.push(
-            _getDependencies(dep, root, onProgressUpdate, seen, remaining, result).then(
+            _getDependencies(dep, root, onProgressUpdate, result, seen, remaining).then(
                 () => {
                     result.add(dep)
                     root.setEdge(name, dep)

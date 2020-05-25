@@ -21,7 +21,9 @@ const packageReducer = (state = initialState, action) => {
                 }
             }
         case CLEAR_PACKAGE_INFO:
-            return initialState
+            return {
+                ...initialState
+            }
         case PACKAGE_INFO_SEARCH_START:
             return {
                 ...initialState,

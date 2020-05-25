@@ -6,22 +6,52 @@ import semver from 'semver'
 import { connect } from 'react-redux'
 import { getDependenciesFromJsonFile } from '../../store/actions/search'
 import { setPackageInfo } from '../../store/actions/package'
+import { searchStart, searchFinished } from '../../store/actions/search'
 
 class Upload extends React.Component {
     constructor(props) {
         super(props)
         this.inputRef = React.createRef()
+
         this.triggerUpload = this.triggerUpload.bind(this)
         this.readFile = this.readFile.bind(this)
-        this.fileReader = new FileReader()
+        this.uploadStart = this.uploadStart.bind(this)
+        this.onFileLoaded = this.onFileLoaded.bind(this)
 
-        this.state = {
-            isLoading: false
+        if (window.FileReader) {
+            this.fileReader = new FileReader()
         }
     }
 
     triggerUpload() {
         this.inputRef.click()
+    }
+
+    uploadStart() {
+        console.log('Load started')
+        this.props.searchStart()
+    }
+
+    onFileLoaded() {
+        // Reset the input value so users can upload the same
+        // file multiple times
+        this.inputRef.value = null
+
+        const content = this.fileReader.result
+
+        try {
+            const json = JSON.parse(content)
+            console.log(JSON.stringify(json.dependencies, null, 3))
+            if (!json.dependencies) {
+                message.info('package.json file has no dependencies block')
+                return
+            }
+            this.props.getDependenciesFromJsonFile(json)
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(err)
+            message.error('Error parsing file')
+        }
     }
 
     readFile() {
@@ -30,28 +60,12 @@ class Upload extends React.Component {
         }
 
         this.fileReader.readAsText(this.inputRef.files[0])
-        this.fileReader.onloadstart = () => this.setState({ isLoading: true })
-        this.fileReader.onloadend = () => this.setState({ isLoading: false })
-
-        this.fileReader.onload = result => {
-            const content = this.fileReader.result
-            try {
-                const json = JSON.parse(content)
-                console.log(json)
-                if (!json.dependencies) {
-                    message.info('package.json file has no dependencies block')
-                    return
-                }
-                this.props.getDependenciesFromJsonFile(json)
-            } catch (err) {
-                // eslint-disable-next-line no-console
-                console.error(err)
-                message.error('Error parsing file')
-            }
-        }
+        this.fileReader.onloadstart = this.uploadStart
+        this.fileReader.onloadend = this.uploadEnd
+        this.fileReader.onload = this.onFileLoaded
 
         this.fileReader.onerror = err => {
-            this.setState({ isLoading: false })
+            console.error(err)
             message.error('Error reading file')
         }
     }
@@ -73,7 +87,7 @@ class Upload extends React.Component {
                 <Button
                     icon={<UploadOutlined />}
                     onClick={this.triggerUpload}
-                    disabled={this.state.isLoading}
+                    // disabled={this.props.isLoading || this.props.isGraphRendering}
                 >
                     Upload package.json
                 </Button>
@@ -82,8 +96,15 @@ class Upload extends React.Component {
     }
 }
 
+const mapStateToProps = state => ({
+    isGraphRendering: state.graph.isRendering,
+    isLoading: state.search.isLoading
+})
+
 const mapDispatchToProps = {
-    getDependenciesFromJsonFile
+    getDependenciesFromJsonFile,
+    searchStart,
+    searchFinished
 }
 
-export default connect(null, mapDispatchToProps)(Upload)
+export default connect(mapStateToProps, mapDispatchToProps)(Upload)

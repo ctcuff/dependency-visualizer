@@ -69,7 +69,7 @@ const setPackageInfoFromJson = json => {
     }
 }
 
-const searchStart = () => ({
+const packageSearchStart = () => ({
     type: PACKAGE_INFO_SEARCH_START
 })
 
@@ -80,7 +80,7 @@ const packageInfoError = errorCode => ({
 
 const getPackageInfo = packageName => {
     return dispatch => {
-        dispatch(searchStart())
+        dispatch(packageSearchStart())
 
         fetch(`https://api.npms.io/v2/package/${encodeURIComponent(packageName)}`).then(
             async res => {

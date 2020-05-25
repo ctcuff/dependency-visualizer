@@ -9,6 +9,7 @@ import { DataSet, Network } from 'vis-network/standalone'
 import { Empty, Typography, Button, Tooltip } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import { optimizedOptions } from './config'
+import { renderStart, renderFinished } from '../../store/actions/graph'
 import image from '../../static/empty.png'
 
 const { Title } = Typography
@@ -90,6 +91,8 @@ class DependencyGraph extends React.Component {
             return
         }
 
+        this.props.renderStart()
+
         this.dataset.nodes.clear()
         this.dataset.edges.clear()
 
@@ -119,6 +122,8 @@ class DependencyGraph extends React.Component {
             graphPosition: this.network.getViewPosition(),
             graphScale: this.network.getScale()
         })
+
+        this.props.renderFinished()
 
         // Disabling physics after the graph renders lets us
         // keep the graphs layout, but prevents nodes from
@@ -310,4 +315,9 @@ const mapStateToProps = state => ({
     rootNodeId: state.graph.data.rootNodeId
 })
 
-export default connect(mapStateToProps)(DependencyGraph)
+const mapDispatchToProps = {
+    renderStart,
+    renderFinished
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DependencyGraph)
