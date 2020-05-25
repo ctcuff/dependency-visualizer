@@ -143,6 +143,10 @@ class DependencyGraph extends React.Component {
     }
 
     toggleCenterButton(show) {
+        if (!this.centerButtonRef || !this.centerButtonRef.current) {
+            return
+        }
+
         const centerButton = ReactDOM.findDOMNode(this.centerButtonRef)
         centerButton.style.display = show ? '' : 'none'
     }
