@@ -24,6 +24,8 @@ import PackageInfo from '../PackageInfo'
 import { clearCache } from '../../util/cache'
 import debounce from '../../util/debounce'
 import Upload from '../Upload'
+import watch from 'redux-watch'
+import store from '../../store'
 
 const { Sider } = Layout
 
@@ -39,7 +41,7 @@ class Menu extends React.Component {
         this.state = {
             isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
             isMobile: window.innerWidth <= MOBILE_BREAKPOINT,
-            searchQuery: ''
+            inputValue: ''
         }
 
         this.onSearch = this.onSearch.bind(this)
@@ -47,6 +49,16 @@ class Menu extends React.Component {
         this.clearCache = this.clearCache.bind(this)
         this.onResize = debounce(this.onResize.bind(this), 500)
         this.renderConfirmPopper = this.renderConfirmPopper.bind(this)
+        this.updateInput = this.updateInput.bind(this)
+
+        const watcher = watch(store.getState, 'search.searchQuery')
+
+        // Since clicking on a dependency in the menu starts a search
+        // with a new query, we need to watch part of the store to
+        // make sure the search input value updates
+        this.unsubscribe = store.subscribe(
+            watcher(newValue => this.setState({ inputValue: newValue }))
+        )
     }
 
     componentDidMount() {
@@ -54,6 +66,7 @@ class Menu extends React.Component {
     }
 
     componentWillUnmount() {
+        this.unsubscribe()
         window.removeEventListener('resize', this.onResize)
     }
 
@@ -62,14 +75,19 @@ class Menu extends React.Component {
     }
 
     onSearch(event) {
-        const searchQuery = event.target.value.trim()
+        const inputValue = event.target.value.trim()
 
-        if (!searchQuery || searchQuery === this.state.searchQuery) {
+        // Prevent searching for a package that was just searched
+        if (!inputValue || inputValue === this.props.searchQuery) {
             return
         }
 
-        this.props.searchPackage(searchQuery.trim())
-        this.setState({ searchQuery })
+        this.props.searchPackage(inputValue)
+        this.setState({ inputValue })
+    }
+
+    updateInput(event) {
+        this.setState({ inputValue: event.target.value })
     }
 
     clearCache() {
@@ -140,11 +158,13 @@ class Menu extends React.Component {
                     <div className="menu-content">
                         <div className="input-wrapper">
                             <Input
+                                value={this.state.inputValue}
                                 className="input-search"
                                 placeholder="Search..."
                                 size="large"
                                 prefix={<SearchOutlined />}
                                 onPressEnter={this.onSearch}
+                                onChange={this.updateInput}
                             />
                         </div>
                         <Row className="stats" justify="center" align="middle">
@@ -190,7 +210,8 @@ const mapStateToProps = state => ({
     isLoading: state.search.isLoading,
     packagesLoaded: state.search.packagesLoaded,
     packagesRemaining: state.search.packagesRemaining,
-    cacheSize: state.search.cacheSize
+    cacheSize: state.search.cacheSize,
+    searchQuery: state.search.searchQuery
 })
 
 const mapDispatchToProps = {
