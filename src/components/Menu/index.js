@@ -145,7 +145,6 @@ class Menu extends React.Component {
                                 size="large"
                                 prefix={<SearchOutlined />}
                                 onPressEnter={this.onSearch}
-                                // disabled={this.props.isLoading}
                             />
                         </div>
                         <Row className="stats" justify="center" align="middle">

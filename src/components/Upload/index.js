@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { getDependenciesFromJsonFile } from '../../store/actions/search'
 import { searchStart, searchFinished, searchError } from '../../store/actions/search'
+import Errors from '../../util/errors'
 
 class Upload extends React.Component {
     constructor(props) {
@@ -33,8 +34,7 @@ class Upload extends React.Component {
     onError(err) {
         // eslint-disable-next-line no-console
         console.error(err)
-        message.error('Error reading file')
-        this.props.searchError(-1)
+        this.props.searchError(Errors.FILE_READ_ERROR)
     }
 
     onFileLoaded() {
@@ -57,8 +57,11 @@ class Upload extends React.Component {
 
             this.props.getDependenciesFromJsonFile(json)
         } catch (err) {
-            message.error(err.message)
+            // Dispatch search finished instead of an error
+            // since we don't want the error overlay to show
+            // in this case
             this.props.searchFinished()
+            message.error(err.message)
         }
     }
 
