@@ -122,8 +122,15 @@ const Dependencies = props => {
                             className="dependency-info"
                             onClick={() => props.onDependencyClick(key)}
                         >
-                            <span className="dependency-name">{key}</span>
-                            <span>{props.dependencies[key]}</span>
+                            <span className="dependency-name" title={key}>
+                                {key}
+                            </span>
+                            <span
+                                className="dependency-name"
+                                title={props.dependencies[key]}
+                            >
+                                {props.dependencies[key]}
+                            </span>
                         </div>
                     ))}
                 </Panel>

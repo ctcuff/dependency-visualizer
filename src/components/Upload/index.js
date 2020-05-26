@@ -55,6 +55,15 @@ class Upload extends React.Component {
                 throw new Error('This file must have a name field')
             }
 
+            // This could really only occur if the user tries to upload a
+            // package-lock.json file, since its dependencies are objects
+            // instead of strings
+            for (const dep in json.dependencies) {
+                if (typeof json.dependencies[dep] !== 'string') {
+                    throw new Error('Every dependency must be a string')
+                }
+            }
+
             this.props.getDependenciesFromJsonFile(json)
         } catch (err) {
             this.props.searchError(Errors.FILE_READ_ERROR)
