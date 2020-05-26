@@ -57,10 +57,7 @@ class Upload extends React.Component {
 
             this.props.getDependenciesFromJsonFile(json)
         } catch (err) {
-            // Dispatch search finished instead of an error
-            // since we don't want the error overlay to show
-            // in this case
-            this.props.searchFinished()
+            this.props.searchError(Errors.FILE_READ_ERROR)
             message.error(err.message)
         }
     }
