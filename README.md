@@ -6,6 +6,6 @@ A website to visualize what dependencies a node package depends on. Usually, whe
 
 # How do I run this?
 
-1. Clone this reop
+1. Clone this repo
 2. Run `yarn`
 3. Run `yarn dev` to start the server
