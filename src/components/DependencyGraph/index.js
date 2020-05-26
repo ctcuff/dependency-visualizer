@@ -147,8 +147,7 @@ class DependencyGraph extends React.Component {
             return
         }
 
-        const centerButton = ReactDOM.findDOMNode(this.centerButtonRef)
-        centerButton.style.display = show ? '' : 'none'
+        this.centerButtonRef.current.style.display = show ? '' : 'none'
     }
 
     highlightChildren(params) {
@@ -293,7 +292,7 @@ class DependencyGraph extends React.Component {
                             size="large"
                             className="recenter-btn"
                             onClick={this.recenterGraph}
-                            ref={ref => (this.centerButtonRef = ref)}
+                            ref={this.centerButtonRef}
                         />
                     </Tooltip>
                 )}
