@@ -36,7 +36,6 @@ const MOBILE_BREAKPOINT = 650
 class Menu extends React.Component {
     constructor(props) {
         super(props)
-        this.menuRef = React.createRef()
 
         this.state = {
             isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
@@ -130,7 +129,7 @@ class Menu extends React.Component {
 
     render() {
         return (
-            <div className="menu" ref={ref => (this.menuRef = ref)}>
+            <div className="menu">
                 {this.state.isOpen ? (
                     <Button
                         className="menu-open-btn"

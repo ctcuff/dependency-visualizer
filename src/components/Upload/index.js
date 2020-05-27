@@ -25,7 +25,7 @@ class Upload extends React.Component {
     }
 
     triggerUpload() {
-        this.inputRef.click()
+        this.inputRef.current.click()
     }
 
     uploadStart() {
@@ -43,7 +43,7 @@ class Upload extends React.Component {
     onFileLoaded() {
         // Reset the input value so users can
         // upload the same file multiple times
-        this.inputRef.value = null
+        this.inputRef.current.value = null
 
         const content = this.fileReader.result
 
@@ -75,7 +75,9 @@ class Upload extends React.Component {
     }
 
     readFile() {
-        if (!this.inputRef.files || !this.inputRef.files[0]) {
+        const input = this.inputRef.current
+
+        if (!input.files || !input.files[0]) {
             return
         }
 
@@ -83,7 +85,7 @@ class Upload extends React.Component {
         this.fileReader.onload = this.onFileLoaded
         this.fileReader.onerror = this.onError
 
-        this.fileReader.readAsText(this.inputRef.files[0])
+        this.fileReader.readAsText(input.files[0])
     }
 
     render() {
@@ -97,7 +99,7 @@ class Upload extends React.Component {
                     hidden
                     type="file"
                     accept="application/JSON"
-                    ref={ref => (this.inputRef = ref)}
+                    ref={this.inputRef}
                     onChange={this.readFile}
                 />
                 <Button icon={<UploadOutlined />} onClick={this.triggerUpload}>

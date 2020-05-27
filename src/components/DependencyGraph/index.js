@@ -1,6 +1,5 @@
 import './dependency-graph.scss'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import watch from 'redux-watch'
 import store from '../../store'
 import { connect } from 'react-redux'
@@ -65,9 +64,7 @@ class DependencyGraph extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ graphLoadProgress: 0 })
-
-        const container = ReactDOM.findDOMNode(this.containerRef)
+        const container = this.containerRef.current
 
         this.network = new Network(container, this.dataset, this.props.options)
 
@@ -303,7 +300,7 @@ class DependencyGraph extends React.Component {
                             <div className="progress-title">Rendering nodes...</div>
                         </div>
                     )}
-                    <div ref={ref => (this.containerRef = ref)} className="network" />
+                    <div ref={this.containerRef} className="network" />
                 </div>
                 {this.renderEmpty()}
             </div>
