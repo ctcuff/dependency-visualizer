@@ -6,7 +6,7 @@ const noop = () => {}
 
 /**
  * Searches for every dependency a package relies on,
- * but only if that package is found on NPM's registry api.
+ * but only if that package is found on npm's registry api.
  *
  * @param {String} packageName
  * @param {Function} onProgressUpdate
@@ -30,9 +30,9 @@ const getDependencies = async (packageName, onProgressUpdate) => {
 }
 
 /**
- * Recursively searches for every dependency from a package.json file.
+ * Searches for every dependency from a package.json file.
  * Note that this function doesn't care about 404 errors it might get
- * from searching the NPM registry.
+ * from searching the npm registry.
  *
  * @param {String} packageName
  * @param {String[]} dependencies
@@ -52,6 +52,19 @@ const getDependenciesFromFile = async (packageName, dependencies, onProgressUpda
     return root
 }
 
+/**
+ * Recursively makes requests to the npm registry api to get all dependencies
+ * of a package. Requests are added to a promise stack then are removed when
+ * the request completes. Once the stack is empty and all requests have
+ * completed, the function returns
+ *
+ * @param {String} name - The name of the package to search
+ * @param {graphlib.Graph} root - Used to build a graph of dependencies
+ * @param {noop} onProgressUpdate - Called when a request completes
+ * @param {Set} result - Used to keep track of what dependencies this package has
+ * @param {Object} seen - Used to make sure duplicate requests aren't made
+ * @param {Array} remaining - Used to keep track of what requests still need to be made
+ */
 const _getDependencies = async (
     name,
     root,
