@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { getDependenciesFromJsonFile } from '../../store/actions/search'
 import { searchStart, searchFinished, searchError } from '../../store/actions/search'
+import { clearPackageInfo } from '../../store/actions/package'
 import Errors from '../../util/errors'
 
 class Upload extends React.Component {
@@ -28,7 +29,9 @@ class Upload extends React.Component {
     }
 
     uploadStart() {
+        // Dispatch searchStart to show the loading overlay
         this.props.searchStart()
+        this.props.clearPackageInfo()
     }
 
     onError(err) {
@@ -110,7 +113,8 @@ const mapDispatchToProps = {
     getDependenciesFromJsonFile,
     searchStart,
     searchFinished,
-    searchError
+    searchError,
+    clearPackageInfo
 }
 
 export default connect(null, mapDispatchToProps)(Upload)

@@ -70,15 +70,13 @@ const searchPackage = query => {
 
 const getDependenciesFromJsonFile = json => {
     return dispatch => {
-        dispatch(clearPackageInfo())
-        dispatch(searchStart(json.name))
-        dispatch(setPackageInfoFromJson(json))
-
         const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
             dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
         }
 
         const dependencies = Object.keys(json.dependencies)
+
+        dispatch(setPackageInfoFromJson(json))
 
         API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
             .then(
