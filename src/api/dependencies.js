@@ -60,7 +60,7 @@ const getDependenciesFromFile = async (packageName, dependencies, onProgressUpda
  *
  * @param {String} name - The name of the package to search
  * @param {graphlib.Graph} root - Used to build a graph of dependencies
- * @param {noop} onProgressUpdate - Called when a request completes
+ * @param {Function} onProgressUpdate - Called when a request completes
  * @param {Set} result - Used to keep track of what dependencies this package has
  * @param {Object} seen - Used to make sure duplicate requests aren't made
  * @param {Array} remaining - Used to keep track of what requests still need to be made

@@ -80,7 +80,6 @@ class Upload extends React.Component {
         }
 
         this.fileReader.onloadstart = this.uploadStart
-        this.fileReader.onloadend = this.uploadEnd
         this.fileReader.onload = this.onFileLoaded
         this.fileReader.onerror = this.onError
 
