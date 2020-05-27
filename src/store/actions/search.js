@@ -6,9 +6,10 @@ import {
     SEARCH_UPDATE_CACHE_SIZE
 } from './types'
 import { updateGraphData } from './graph'
-import { clearPackageInfo, getPackageInfo } from './package'
+import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
 import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
+import Errors from '../../util/errors'
 
 const searchStart = query => ({
     type: SEARCH_STARTED,
@@ -24,7 +25,7 @@ const searchError = errorCode => ({
     errorCode
 })
 
-const updateCacheSize = cacheSize => ({
+const updateCacheSize = () => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
     cacheSize: getCacheSize()
 })
@@ -56,13 +57,51 @@ const searchPackage = query => {
                     dispatch(updateGraphData(data))
                 },
                 error => {
-                    dispatch(searchError(error))
+                    // eslint-disable-next-line no-console
+                    console.error(error)
+                    dispatch(searchError(Errors.NOT_FOUND))
                 }
             )
             .finally(() => {
-                dispatch(updateCacheSize(getCacheSize()))
+                dispatch(updateCacheSize())
             })
     }
 }
 
-export { searchPackage, updateCacheSize }
+const getDependenciesFromJsonFile = json => {
+    return dispatch => {
+        const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
+            dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
+        }
+
+        const dependencies = Object.keys(json.dependencies)
+
+        dispatch(setPackageInfoFromJson(json))
+
+        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
+            .then(
+                graph => {
+                    const data = API.graphToJson(json.name, graph)
+                    dispatch(searchFinished())
+                    dispatch(updateGraphData(data))
+                },
+                error => {
+                    // eslint-disable-next-line no-console
+                    console.error(error)
+                    dispatch(searchError(Errors.FILE_READ_ERROR))
+                }
+            )
+            .finally(() => {
+                dispatch(updateCacheSize())
+            })
+    }
+}
+
+export {
+    searchPackage,
+    updateCacheSize,
+    getDependenciesFromJsonFile,
+    searchStart,
+    searchFinished,
+    searchError
+}

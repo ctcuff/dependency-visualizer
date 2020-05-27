@@ -61,7 +61,7 @@ const optimizedOptions = {
         improvedLayout: false
     },
     edges: {
-        width: 0.5,
+        width: 0.15,
         arrows: {
             to: {
                 enabled: true,

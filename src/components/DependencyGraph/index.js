@@ -9,6 +9,7 @@ import { DataSet, Network } from 'vis-network/standalone'
 import { Empty, Typography, Button, Tooltip } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import { optimizedOptions } from './config'
+import { renderStart, renderFinished } from '../../store/actions/graph'
 import image from '../../static/empty.png'
 
 const { Title } = Typography
@@ -90,6 +91,8 @@ class DependencyGraph extends React.Component {
             return
         }
 
+        this.props.renderStart()
+
         this.dataset.nodes.clear()
         this.dataset.edges.clear()
 
@@ -120,6 +123,8 @@ class DependencyGraph extends React.Component {
             graphScale: this.network.getScale()
         })
 
+        this.props.renderFinished()
+
         // Disabling physics after the graph renders lets us
         // keep the graphs layout, but prevents nodes from
         // moving when other nodes are dragged
@@ -138,8 +143,11 @@ class DependencyGraph extends React.Component {
     }
 
     toggleCenterButton(show) {
-        const centerButton = ReactDOM.findDOMNode(this.centerButtonRef)
-        centerButton.style.display = show ? '' : 'none'
+        if (!this.centerButtonRef || !this.centerButtonRef.current) {
+            return
+        }
+
+        this.centerButtonRef.current.style.display = show ? '' : 'none'
     }
 
     highlightChildren(params) {
@@ -284,7 +292,7 @@ class DependencyGraph extends React.Component {
                             size="large"
                             className="recenter-btn"
                             onClick={this.recenterGraph}
-                            ref={ref => (this.centerButtonRef = ref)}
+                            ref={this.centerButtonRef}
                         />
                     </Tooltip>
                 )}
@@ -310,4 +318,9 @@ const mapStateToProps = state => ({
     rootNodeId: state.graph.data.rootNodeId
 })
 
-export default connect(mapStateToProps)(DependencyGraph)
+const mapDispatchToProps = {
+    renderStart,
+    renderFinished
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DependencyGraph)

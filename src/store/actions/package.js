@@ -41,7 +41,35 @@ const setPackageInfo = data => {
     }
 }
 
-const searchStart = () => ({
+const setPackageInfoFromJson = json => {
+    const { name, version, dependencies, description, homepage } = json
+    let links = null
+
+    if (homepage) {
+        links = {
+            homepage: json.homepage
+        }
+    }
+
+    return {
+        type: SET_PACKAGE_INFO,
+        packageInfo: {
+            name,
+            version: version || 'Unknown',
+            dependencies,
+            description,
+            links,
+            stars: null,
+            forks: null,
+            quality: null,
+            popularity: null,
+            downloads: null,
+            dependents: null
+        }
+    }
+}
+
+const packageSearchStart = () => ({
     type: PACKAGE_INFO_SEARCH_START
 })
 
@@ -52,7 +80,7 @@ const packageInfoError = errorCode => ({
 
 const getPackageInfo = packageName => {
     return dispatch => {
-        dispatch(searchStart())
+        dispatch(packageSearchStart())
 
         fetch(`https://api.npms.io/v2/package/${encodeURIComponent(packageName)}`).then(
             async res => {
@@ -75,4 +103,4 @@ const getPackageInfo = packageName => {
 
 const clearPackageInfo = () => ({ type: CLEAR_PACKAGE_INFO })
 
-export { setPackageInfo, clearPackageInfo, getPackageInfo }
+export { setPackageInfo, clearPackageInfo, getPackageInfo, setPackageInfoFromJson }
