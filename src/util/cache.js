@@ -28,7 +28,7 @@ const getDependenciesFromCache = packageName => {
         return Array.from(dependencies)
     } catch (err) {
         // eslint-disable-next-line no-console
-        console.err('Error parsing cache', err)
+        console.error('Error parsing cache', err)
         return null
     }
 }
@@ -78,7 +78,7 @@ const clearHalfCache = () => {
                 })
             } catch (err) {
                 // eslint-disable-next-line no-console
-                console.err('Error retrieving dependency from cache', err)
+                console.error('Error retrieving dependency from cache', err)
             }
         }
     }
