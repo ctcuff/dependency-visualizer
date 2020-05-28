@@ -1,7 +1,8 @@
 import './package-info.scss'
 import React from 'react'
-import { Row, Col, Progress, Statistic, Collapse } from 'antd'
+import { Row, Col, Progress, Statistic, Collapse, Divider } from 'antd'
 import { connect } from 'react-redux'
+import Errors from '../../util/errors'
 
 const { Panel } = Collapse
 
@@ -105,7 +106,7 @@ const Dependencies = props => {
     const deps = Object.keys(props.dependencies)
 
     return (
-        <div className="package-info-block">
+        <div className="package-info-block dependencies">
             <Collapse
                 bordered={false}
                 className="dependencies-collapse"
@@ -121,8 +122,15 @@ const Dependencies = props => {
                             className="dependency-info"
                             onClick={() => props.onDependencyClick(key)}
                         >
-                            <span className="dependency-name">{key}</span>
-                            <span>{props.dependencies[key]}</span>
+                            <span className="dependency-name" title={key}>
+                                {key}
+                            </span>
+                            <span
+                                className="dependency-name"
+                                title={props.dependencies[key]}
+                            >
+                                {props.dependencies[key]}
+                            </span>
                         </div>
                     ))}
                 </Panel>
@@ -144,10 +152,8 @@ const PackageInfo = props => {
         let message = ''
 
         switch (props.errorCode) {
-            // 400 occurs when a user searches for a package
-            // with invalid characters
-            case 400:
-            case 404:
+            case Errors.BAD_REQUEST:
+            case Errors.NOT_FOUND:
                 message = `No details found for ${props.searchQuery}`
                 break
             default:
@@ -198,6 +204,7 @@ const PackageInfo = props => {
                 dependencies={dependencies}
                 onDependencyClick={props.onDependencyClick}
             />
+            <Divider className="package-info-divider" />
         </div>
     )
 }

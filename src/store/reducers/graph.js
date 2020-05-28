@@ -1,5 +1,4 @@
 import { UPDATE_GRAPH_DATA } from '../actions/types'
-import { defaultOptions } from '../../components/DependencyGraph/config'
 
 const defaultData = {
     rootNodeId: '',
@@ -8,8 +7,9 @@ const defaultData = {
 }
 
 const initialState = {
-    options: { ...defaultOptions },
-    data: { ...defaultData }
+    data: {
+        ...defaultData
+    }
 }
 
 const graphReducer = (state = initialState, action) => {

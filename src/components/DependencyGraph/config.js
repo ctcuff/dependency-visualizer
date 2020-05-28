@@ -49,49 +49,27 @@ const defaultOptions = {
 // Graph options that increase fps/rendering speeds
 // for larger data sets
 const optimizedOptions = {
+    ...defaultOptions,
     nodes: {
-        shape: 'dot',
-        size: 12,
+        ...defaultOptions.nodes,
         scaling: {
             min: 10,
             max: 30
         }
     },
-    layout: {
-        improvedLayout: false
-    },
     edges: {
-        width: 0.5,
-        arrows: {
-            to: {
-                enabled: true,
-                scaleFactor: 0.5
-            },
-            from: {
-                enabled: false
-            }
-        },
-        smooth: {
-            type: 'continuous'
-        }
+        ...defaultOptions.edges,
+        width: 0.15
     },
     physics: {
-        maxVelocity: 50,
-        solver: 'forceAtlas2Based',
-        timestep: 0.5,
+        ...defaultOptions.physics,
         forceAtlas2Based: {
-            gravitationalConstant: -26,
-            centralGravity: 0.005,
-            springLength: 230,
-            springConstant: 0.18
+            ...defaultOptions.physics.forceAtlas2Based,
+            avoidOverlap: 0
         },
         stabilization: {
             updateInterval: 1
         }
-    },
-    interaction: {
-        hideEdgesOnDrag: true,
-        hideEdgesOnZoom: true
     }
 }
 

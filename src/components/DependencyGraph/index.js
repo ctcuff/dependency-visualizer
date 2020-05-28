@@ -1,6 +1,5 @@
 import './dependency-graph.scss'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import watch from 'redux-watch'
 import store from '../../store'
 import { connect } from 'react-redux'
@@ -8,7 +7,7 @@ import deepEqual from 'deep-equal'
 import { DataSet, Network } from 'vis-network/standalone'
 import { Empty, Typography, Button, Tooltip } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
-import { optimizedOptions } from './config'
+import { optimizedOptions, defaultOptions } from './config'
 import image from '../../static/empty.png'
 
 const { Title } = Typography
@@ -64,11 +63,9 @@ class DependencyGraph extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ graphLoadProgress: 0 })
+        const container = this.containerRef.current
 
-        const container = ReactDOM.findDOMNode(this.containerRef)
-
-        this.network = new Network(container, this.dataset, this.props.options)
+        this.network = new Network(container, this.dataset, defaultOptions)
 
         // Triggered when the graph starts trying to render nodes
         this.network.on('stabilizationProgress', this.onStabilizationProgress)
@@ -138,8 +135,11 @@ class DependencyGraph extends React.Component {
     }
 
     toggleCenterButton(show) {
-        const centerButton = ReactDOM.findDOMNode(this.centerButtonRef)
-        centerButton.style.display = show ? '' : 'none'
+        if (!this.centerButtonRef || !this.centerButtonRef.current) {
+            return
+        }
+
+        this.centerButtonRef.current.style.display = show ? '' : 'none'
     }
 
     highlightChildren(params) {
@@ -257,11 +257,11 @@ class DependencyGraph extends React.Component {
                 <Empty image={image} imageStyle={{ height: '12em' }} description={null}>
                     <div>
                         <Title level={2}>No data to show</Title>
-                        <p>It's lookin' pretty empty in here.</p>
+                        <p>{`It's lookin pretty empty in here.`}</p>
                         <p className="message">
-                            Try searching for a package like "react" or "express".
+                            {`Try searching for a package like "react" or "express".
                             Although, that might be hard if you don't have hands. Or maybe
-                            you're a robot. That's ok, I won't judge.
+                            you're a robot. Thats ok, I wont judge.`}
                         </p>
                     </div>
                 </Empty>
@@ -272,9 +272,9 @@ class DependencyGraph extends React.Component {
     render() {
         const { graphLoadProgress, graphPosition, graphScale } = this.state
 
-        // Set the dependency graph to hidden so that vis can
-        // still find the graph element when there is no data
-        // to show
+        // Set the network wrapper to hidden so that vis can
+        // still find the graph element even when there's
+        // no data to show
         return (
             <div className="dependency-graph">
                 {graphLoadProgress < 100 || !graphPosition || !graphScale ? null : (
@@ -284,7 +284,7 @@ class DependencyGraph extends React.Component {
                             size="large"
                             className="recenter-btn"
                             onClick={this.recenterGraph}
-                            ref={ref => (this.centerButtonRef = ref)}
+                            ref={this.centerButtonRef}
                         />
                     </Tooltip>
                 )}
@@ -295,7 +295,7 @@ class DependencyGraph extends React.Component {
                             <div className="progress-title">Rendering nodes...</div>
                         </div>
                     )}
-                    <div ref={ref => (this.containerRef = ref)} className="network" />
+                    <div ref={this.containerRef} className="network" />
                 </div>
                 {this.renderEmpty()}
             </div>
@@ -304,10 +304,9 @@ class DependencyGraph extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    options: state.graph.options,
     nodes: state.graph.data.nodes,
     edges: state.graph.data.edges,
     rootNodeId: state.graph.data.rootNodeId
 })
 
-export default connect(mapStateToProps)(DependencyGraph)
+export default connect(mapStateToProps, null)(DependencyGraph)

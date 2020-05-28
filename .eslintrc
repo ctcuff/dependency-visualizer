@@ -1,9 +1,9 @@
 {
-    "extends": "react-app",
+    "extends": ["react-app", "plugin:react/recommended"],
     "rules": {
         "semi": ["error", "never"],
         "no-console": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": ["error", {"args": "after-used"}],
         "no-mixed-spaces-and-tabs": "error",
         "no-trailing-spaces": "error",
         "no-var": "error",
@@ -14,6 +14,7 @@
             "children": {
               "when": "never"
             }
-        }]
+        }],
+        "react/prop-types": 0
     }
 }

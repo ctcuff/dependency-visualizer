@@ -26,7 +26,8 @@ const searchReducer = (state = initialState, action) => {
                 searchQuery: action.query,
                 packagesRemaining: 0,
                 packagesLoaded: 0,
-                errorCode: null
+                errorCode: null,
+                currentPackageLoaded: ''
             }
         case SEARCH_PROGRESS:
             return {

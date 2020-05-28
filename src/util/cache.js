@@ -12,7 +12,7 @@ const cacheDependencies = (packageName, dependencies) => {
         localStorage.setItem(packageName, JSON.stringify(data))
     } catch (err) {
         clearHalfCache()
-        store.dispatch(updateCacheSize(localStorage.length))
+        store.dispatch(updateCacheSize())
     }
 }
 
@@ -28,7 +28,7 @@ const getDependenciesFromCache = packageName => {
         return Array.from(dependencies)
     } catch (err) {
         // eslint-disable-next-line no-console
-        console.err('Error parsing cache', err)
+        console.error('Error parsing cache', err)
         return null
     }
 }
@@ -54,7 +54,7 @@ const clearCache = () => {
     const length = localStorage.length
 
     localStorage.clear()
-    store.dispatch(updateCacheSize(0))
+    store.dispatch(updateCacheSize())
 
     return length
 }
@@ -78,7 +78,7 @@ const clearHalfCache = () => {
                 })
             } catch (err) {
                 // eslint-disable-next-line no-console
-                console.err('Error retrieving dependency from cache', err)
+                console.error('Error retrieving dependency from cache', err)
             }
         }
     }
