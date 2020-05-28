@@ -262,11 +262,11 @@ class DependencyGraph extends React.Component {
                 <Empty image={image} imageStyle={{ height: '12em' }} description={null}>
                     <div>
                         <Title level={2}>No data to show</Title>
-                        <p>It's lookin' pretty empty in here.</p>
+                        <p>{`It's lookin pretty empty in here.`}</p>
                         <p className="message">
-                            Try searching for a package like "react" or "express".
+                            {`Try searching for a package like "react" or "express".
                             Although, that might be hard if you don't have hands. Or maybe
-                            you're a robot. That's ok, I won't judge.
+                            you're a robot. Thats ok, I wont judge.`}
                         </p>
                     </div>
                 </Empty>
@@ -277,9 +277,9 @@ class DependencyGraph extends React.Component {
     render() {
         const { graphLoadProgress, graphPosition, graphScale } = this.state
 
-        // Set the dependency graph to hidden so that vis can
-        // still find the graph element when there is no data
-        // to show
+        // Set the network wrapper to hidden so that vis can
+        // still find the graph element even when there's
+        // no data to show
         return (
             <div className="dependency-graph">
                 {graphLoadProgress < 100 || !graphPosition || !graphScale ? null : (

@@ -15,7 +15,7 @@ const messages = [
 ]
 
 const LoadingOverlay = props => {
-    if (!props.isLoading || props.error) {
+    if (!props.isLoading) {
         return null
     }
 

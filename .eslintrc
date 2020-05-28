@@ -1,5 +1,5 @@
 {
-    "extends": "react-app",
+    "extends": ["react-app", "plugin:react/recommended"],
     "rules": {
         "semi": ["error", "never"],
         "no-console": "error",
@@ -15,6 +15,6 @@
               "when": "never"
             }
         }],
-        "react/no-find-dom-node": "error"
+        "react/prop-types": 0
     }
 }
