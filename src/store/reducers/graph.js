@@ -1,5 +1,4 @@
-import { UPDATE_GRAPH_DATA, RENDER_START, RENDER_FINISHED } from '../actions/types'
-import { defaultOptions } from '../../components/DependencyGraph/config'
+import { UPDATE_GRAPH_DATA } from '../actions/types'
 
 const defaultData = {
     rootNodeId: '',
@@ -8,9 +7,9 @@ const defaultData = {
 }
 
 const initialState = {
-    isRendering: false,
-    options: { ...defaultOptions },
-    data: { ...defaultData }
+    data: {
+        ...defaultData
+    }
 }
 
 const graphReducer = (state = initialState, action) => {
@@ -21,16 +20,6 @@ const graphReducer = (state = initialState, action) => {
                 data: {
                     ...action.data
                 }
-            }
-        case RENDER_START:
-            return {
-                ...state,
-                isRendering: true
-            }
-        case RENDER_FINISHED:
-            return {
-                ...state,
-                isRendering: false
             }
         default:
             return state

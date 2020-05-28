@@ -7,8 +7,7 @@ import deepEqual from 'deep-equal'
 import { DataSet, Network } from 'vis-network/standalone'
 import { Empty, Typography, Button, Tooltip } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
-import { optimizedOptions } from './config'
-import { renderStart, renderFinished } from '../../store/actions/graph'
+import { optimizedOptions, defaultOptions } from './config'
 import image from '../../static/empty.png'
 
 const { Title } = Typography
@@ -66,7 +65,7 @@ class DependencyGraph extends React.Component {
     componentDidMount() {
         const container = this.containerRef.current
 
-        this.network = new Network(container, this.dataset, this.props.options)
+        this.network = new Network(container, this.dataset, defaultOptions)
 
         // Triggered when the graph starts trying to render nodes
         this.network.on('stabilizationProgress', this.onStabilizationProgress)
@@ -87,8 +86,6 @@ class DependencyGraph extends React.Component {
         if (!this.network) {
             return
         }
-
-        this.props.renderStart()
 
         this.dataset.nodes.clear()
         this.dataset.edges.clear()
@@ -119,8 +116,6 @@ class DependencyGraph extends React.Component {
             graphPosition: this.network.getViewPosition(),
             graphScale: this.network.getScale()
         })
-
-        this.props.renderFinished()
 
         // Disabling physics after the graph renders lets us
         // keep the graphs layout, but prevents nodes from
@@ -309,15 +304,9 @@ class DependencyGraph extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    options: state.graph.options,
     nodes: state.graph.data.nodes,
     edges: state.graph.data.edges,
     rootNodeId: state.graph.data.rootNodeId
 })
 
-const mapDispatchToProps = {
-    renderStart,
-    renderFinished
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DependencyGraph)
+export default connect(mapStateToProps, null)(DependencyGraph)
