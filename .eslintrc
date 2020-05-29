@@ -58,6 +58,9 @@
                 "browser": true,
                 "es6": true,
                 "node": true
+            },
+            "rules": {
+                "@typescript-eslint/ban-ts-comment": "off"
             }
         }
     ]

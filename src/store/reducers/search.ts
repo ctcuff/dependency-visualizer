@@ -5,9 +5,20 @@ import {
     SEARCH_ERROR,
     SEARCH_UPDATE_CACHE_SIZE
 } from '../actions/types'
+import { SearchAction } from '../actions/search'
 import { getCacheSize } from '../../util/cache'
 
-const initialState = {
+type SearchState = {
+    isLoading: boolean
+    searchQuery: string
+    packagesLoaded: number
+    packagesRemaining: number
+    currentPackageLoaded: string
+    errorCode: null | number
+    cacheSize: number
+}
+
+const initialState: SearchState = {
     isLoading: false,
     searchQuery: '',
     packagesRemaining: 0,
@@ -17,7 +28,7 @@ const initialState = {
     cacheSize: getCacheSize()
 }
 
-const searchReducer = (state = initialState, action) => {
+const searchReducer = (state = initialState, action: SearchAction): SearchState => {
     switch (action.type) {
         case SEARCH_STARTED:
             return {

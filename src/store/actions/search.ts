@@ -1,49 +1,86 @@
-import {
-    SEARCH_STARTED,
-    SEARCH_PROGRESS,
-    SEARCH_FINISHED,
-    SEARCH_ERROR,
-    SEARCH_UPDATE_CACHE_SIZE
-} from './types'
 import { updateGraphData } from './graph'
+import {
+    SEARCH_FINISHED,
+    SEARCH_STARTED,
+    SEARCH_UPDATE_CACHE_SIZE,
+    SEARCH_PROGRESS,
+    SEARCH_ERROR
+} from './types'
 import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
 import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
 import Errors from '../../util/errors'
+import { ActionCreator, Dispatch } from 'redux'
 
-const searchStart = query => ({
+type SearchStart = {
+    type: typeof SEARCH_STARTED
+    query: string
+}
+
+type SearchFinished = {
+    type: typeof SEARCH_FINISHED
+}
+
+type SearchError = {
+    type: typeof SEARCH_ERROR
+    errorCode: number
+}
+
+type SearchUpdateCache = {
+    type: typeof SEARCH_UPDATE_CACHE_SIZE
+    cacheSize: number
+}
+
+type SearchUpdateProgress = {
+    type: typeof SEARCH_PROGRESS
+    packagesLoaded: number
+    packagesRemaining: number
+    currentPackageLoaded: string
+}
+
+const searchStart = (query: string): SearchAction => ({
     type: SEARCH_STARTED,
     query
 })
 
-const searchFinished = () => ({
+const searchFinished = (): SearchAction => ({
     type: SEARCH_FINISHED
 })
 
-const searchError = errorCode => ({
+const searchError = (errorCode: number): SearchAction => ({
     type: SEARCH_ERROR,
     errorCode
 })
 
-const updateCacheSize = () => ({
+const updateCacheSize = (): SearchAction => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
     cacheSize: getCacheSize()
 })
 
-const updateSearchProgress = (packagesRemaining, packagesLoaded, packageName) => ({
+const updateSearchProgress = (
+    packagesRemaining: number,
+    packagesLoaded: number,
+    packageName: string
+): SearchAction => ({
     type: SEARCH_PROGRESS,
     packagesLoaded,
     packagesRemaining,
     currentPackageLoaded: packageName
 })
 
-const searchPackage = query => {
-    return dispatch => {
+// TODO: Give proper typing to ActionCreator
+const searchPackage = (query: string): ActionCreator<any> => {
+    return (dispatch: Dispatch) => {
         dispatch(clearPackageInfo())
         dispatch(searchStart(query))
+        // @ts-ignore
         dispatch(getPackageInfo(query))
 
-        const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
+        const onProgressUpdate = (
+            packagesRemaining: number,
+            packagesLoaded: number,
+            packageName: string
+        ) => {
             dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
         }
 
@@ -68,14 +105,23 @@ const searchPackage = query => {
     }
 }
 
-const getDependenciesFromJsonFile = json => {
-    return dispatch => {
-        const onProgressUpdate = (packagesRemaining, packagesLoaded, packageName) => {
+type PackageJson = {
+    name: string
+    dependencies: string[]
+}
+
+// TODO: Give proper typing to ActionCreator
+const getDependenciesFromJsonFile = (json: PackageJson): ActionCreator<any> => {
+    return (dispatch: Dispatch) => {
+        const onProgressUpdate = (
+            packagesRemaining: number,
+            packagesLoaded: number,
+            packageName: string
+        ) => {
             dispatch(updateSearchProgress(packagesRemaining, packagesLoaded, packageName))
         }
 
         const dependencies = Object.keys(json.dependencies)
-
         dispatch(setPackageInfoFromJson(json))
 
         API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
@@ -96,6 +142,13 @@ const getDependenciesFromJsonFile = json => {
             })
     }
 }
+
+export type SearchAction =
+    | SearchStart
+    | SearchFinished
+    | SearchError
+    | SearchUpdateCache
+    | SearchUpdateProgress
 
 export {
     searchPackage,
