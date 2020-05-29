@@ -44,7 +44,7 @@ class DependencyGraph extends React.Component {
         this.highlightChildren = this.highlightChildren.bind(this)
         this.recenterGraph = this.recenterGraph.bind(this)
 
-        const watcher = watch(store.getState, 'graph.data', deepEqual)
+        const watcher = watch(store.getState, 'graph.rootNodeId', deepEqual)
 
         // Watch a part of the store for changes in data
         // so we can reload the graph
@@ -82,7 +82,7 @@ class DependencyGraph extends React.Component {
         this.network.on('click', this.highlightChildren)
     }
 
-    updateGraph(data) {
+    updateGraph(rootNodeId) {
         if (!this.network) {
             return
         }
@@ -101,7 +101,7 @@ class DependencyGraph extends React.Component {
         this.network.redraw()
 
         this.dataset.nodes.update({
-            id: data.rootNodeId,
+            id: rootNodeId,
             size: 32
         })
     }
@@ -304,9 +304,9 @@ class DependencyGraph extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    nodes: state.graph.data.nodes,
-    edges: state.graph.data.edges,
-    rootNodeId: state.graph.data.rootNodeId
+    nodes: state.graph.nodes,
+    edges: state.graph.edges,
+    rootNodeId: state.graph.rootNodeId
 })
 
 export default connect(mapStateToProps, null)(DependencyGraph)

@@ -3,7 +3,8 @@ const Errors = {
     // This can occur when a user searches for a package
     // with invalid characters
     BAD_REQUEST: 400,
-    FILE_READ_ERROR: -1
+    FILE_READ_ERROR: -1,
+    UNKNOWN_ERROR: -2
 }
 
 export default Errors

@@ -168,7 +168,7 @@ const getPackageDependencies = packageName => {
  *
  * ```
  * {
- *      "packageName": "cookies",
+ *       "rootNodeId": "cookies",
  *       "nodes": [
  *          {
  *             "id": "cookies",
