@@ -4,6 +4,7 @@ import {
     PACKAGE_INFO_ERROR,
     PACKAGE_INFO_SEARCH_START
 } from './types'
+import Errors from '../../util/errors'
 
 const setPackageInfo = data => {
     let stars = null
@@ -95,7 +96,7 @@ const getPackageInfo = packageName => {
                 // eslint-disable-next-line no-console
                 console.error(error)
                 // Some unknown error occurred
-                dispatch(packageInfoError(-1))
+                dispatch(packageInfoError(Errors.UNKNOWN_ERROR))
             }
         )
     }
