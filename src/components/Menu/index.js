@@ -81,6 +81,10 @@ class Menu extends React.Component {
             return
         }
 
+        // Taking focus away from the input closes the
+        // keyboard on mobile devices
+        event.target.blur()
+
         this.props.searchPackage(inputValue)
         this.setState({ inputValue })
     }
