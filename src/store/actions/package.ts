@@ -5,8 +5,28 @@ import {
     PACKAGE_INFO_SEARCH_START
 } from './types'
 import Errors from '../../util/errors'
+import { ActionCreator, Dispatch } from 'redux'
 
-const setPackageInfo = data => {
+type PackageSetInfo = {
+    type: typeof SET_PACKAGE_INFO
+    packageInfo: PackageDetails
+}
+
+type PackageError = {
+    type: typeof PACKAGE_INFO_ERROR
+    errorCode: number
+}
+
+type PackageSearchStart = {
+    type: typeof PACKAGE_INFO_SEARCH_START
+}
+
+type PackageClearInfo = {
+    type: typeof CLEAR_PACKAGE_INFO
+}
+
+// data is the JSON response returned from the api.npms.io
+const setPackageInfo = (data: any): PackageAction => {
     let stars = null
     let forks = null
     let links = {}
@@ -42,7 +62,7 @@ const setPackageInfo = data => {
     }
 }
 
-const setPackageInfoFromJson = json => {
+const setPackageInfoFromJson = (json: PackageJson): PackageAction => {
     const { name, version, dependencies, description, homepage } = json
     let links = null
 
@@ -70,17 +90,17 @@ const setPackageInfoFromJson = json => {
     }
 }
 
-const packageSearchStart = () => ({
+const packageSearchStart = (): PackageAction => ({
     type: PACKAGE_INFO_SEARCH_START
 })
 
-const packageInfoError = errorCode => ({
+const packageInfoError = (errorCode: number): PackageAction => ({
     type: PACKAGE_INFO_ERROR,
     errorCode
 })
 
-const getPackageInfo = packageName => {
-    return dispatch => {
+const getPackageInfo = (packageName: string): ActionCreator<void> => {
+    return (dispatch: Dispatch) => {
         dispatch(packageSearchStart())
 
         fetch(`https://api.npms.io/v2/package/${encodeURIComponent(packageName)}`).then(
@@ -102,6 +122,37 @@ const getPackageInfo = packageName => {
     }
 }
 
-const clearPackageInfo = () => ({ type: CLEAR_PACKAGE_INFO })
+const clearPackageInfo = (): PackageAction => ({
+    type: CLEAR_PACKAGE_INFO
+})
+
+export type PackageAction =
+    | PackageSetInfo
+    | PackageError
+    | PackageSearchStart
+    | PackageClearInfo
+export type PackageInfo = Pick<PackageSetInfo, 'packageInfo'>
+
+export type PackageJson = {
+    name: string
+    version: string
+    dependencies: string[]
+    description: string
+    homepage: string
+}
+
+export type PackageDetails = {
+    name: string
+    version: string
+    description: string
+    dependencies: string[]
+    downloads: number | null
+    dependents: number | null
+    stars: number | null
+    forks: number | null
+    quality: number | null
+    popularity: number | null
+    links: { [key: string]: string } | null
+}
 
 export { setPackageInfo, clearPackageInfo, getPackageInfo, setPackageInfoFromJson }

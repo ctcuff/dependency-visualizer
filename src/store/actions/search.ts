@@ -11,6 +11,7 @@ import { getCacheSize } from '../../util/cache'
 import API from '../../api/dependencies'
 import Errors from '../../util/errors'
 import { ActionCreator, Dispatch } from 'redux'
+import { PackageJson } from './package'
 
 type SearchStart = {
     type: typeof SEARCH_STARTED
@@ -57,23 +58,18 @@ const updateCacheSize = (): SearchAction => ({
     cacheSize: getCacheSize()
 })
 
-const updateSearchProgress = (
-    packagesRemaining: number,
-    packagesLoaded: number,
-    packageName: string
-): SearchAction => ({
+// prettier-ignore
+const updateSearchProgress = (remaining: number, loaded: number, name: string): SearchAction => ({
     type: SEARCH_PROGRESS,
-    packagesLoaded,
-    packagesRemaining,
-    currentPackageLoaded: packageName
+    packagesLoaded: loaded,
+    packagesRemaining: remaining,
+    currentPackageLoaded: name
 })
 
-// TODO: Give proper typing to ActionCreator
-const searchPackage = (query: string): ActionCreator<any> => {
-    return (dispatch: Dispatch) => {
+const searchPackage = (query: string): ActionCreator<void> => {
+    return (dispatch: Dispatch | ActionCreator<void>) => {
         dispatch(clearPackageInfo())
         dispatch(searchStart(query))
-        // @ts-ignore
         dispatch(getPackageInfo(query))
 
         const onProgressUpdate = (
@@ -105,13 +101,7 @@ const searchPackage = (query: string): ActionCreator<any> => {
     }
 }
 
-type PackageJson = {
-    name: string
-    dependencies: string[]
-}
-
-// TODO: Give proper typing to ActionCreator
-const getDependenciesFromJsonFile = (json: PackageJson): ActionCreator<any> => {
+const getDependenciesFromJsonFile = (json: PackageJson): ActionCreator<void> => {
     return (dispatch: Dispatch) => {
         const onProgressUpdate = (
             packagesRemaining: number,

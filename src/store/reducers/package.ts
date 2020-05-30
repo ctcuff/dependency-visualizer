@@ -4,14 +4,21 @@ import {
     PACKAGE_INFO_ERROR,
     PACKAGE_INFO_SEARCH_START
 } from '../actions/types'
+import { PackageDetails, PackageAction } from '../actions/package'
 
-const initialState = {
+type PackageState = {
+    errorCode: number | null
+    isLoading: boolean
+    packageInfo: PackageDetails | null
+}
+
+const initialState: PackageState = {
     errorCode: null,
     isLoading: false,
     packageInfo: null
 }
 
-const packageReducer = (state = initialState, action) => {
+const packageReducer = (state = initialState, action: PackageAction): PackageState => {
     switch (action.type) {
         case SET_PACKAGE_INFO:
             return {
