@@ -41,13 +41,16 @@ const getDependencies = async (packageName, onProgressUpdate) => {
 const getDependenciesFromFile = async (packageName, dependencies, onProgressUpdate) => {
     const root = new Graph({ directed: true })
     const result = new Set()
+    const promises = []
 
     root.setNode(packageName)
 
-    for (let i = 0; i < dependencies.length; i++) {
-        root.setEdge(packageName, dependencies[i])
-        await _getDependencies(dependencies[i], root, onProgressUpdate, result)
-    }
+    dependencies.forEach(dep => {
+        root.setEdge(packageName, dep)
+        promises.push(_getDependencies(dep, root, onProgressUpdate, result))
+    })
+
+    await Promise.all(promises)
 
     return root
 }
@@ -96,8 +99,7 @@ const _getDependencies = async (
     // so we can look it up faster
     cacheDependencies(name, dependencies)
 
-    for (let i = 0; i < dependencies.length; i++) {
-        const dep = dependencies[i]
+    dependencies.forEach(dep => {
         remaining.push(dep)
 
         // Add each dependency call to a promise stack so we
@@ -114,7 +116,7 @@ const _getDependencies = async (
                 }
             )
         )
-    }
+    })
 
     return Promise.all(promises)
 }
@@ -205,22 +207,15 @@ const getPackageDependencies = packageName => {
  *```
  */
 const graphToJson = (packageName, graph) => {
-    const nodes = []
-    const edges = []
+    const nodes = graph.nodes().map(nodeName => ({
+        id: nodeName,
+        label: nodeName
+    }))
 
-    graph.nodes().forEach(nodeName => {
-        nodes.push({
-            id: nodeName,
-            label: nodeName
-        })
-    })
-
-    graph.edges().forEach(edge => {
-        edges.push({
-            from: edge.v,
-            to: edge.w
-        })
-    })
+    const edges = graph.edges().map(edge => ({
+        from: edge.v,
+        to: edge.w
+    }))
 
     return {
         rootNodeId: packageName,
