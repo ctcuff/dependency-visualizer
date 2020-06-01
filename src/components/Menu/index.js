@@ -2,17 +2,15 @@ import './menu.scss'
 import React from 'react'
 import {
     Layout,
-    Input,
     Statistic,
     Row,
     Col,
     Divider,
     Button,
     Popconfirm,
-    message
+    message,
 } from 'antd'
 import {
-    SearchOutlined,
     MenuOutlined,
     LeftOutlined,
     DeleteOutlined,
@@ -24,8 +22,7 @@ import PackageInfo from '../PackageInfo'
 import { clearCache } from '../../util/cache'
 import debounce from '../../util/debounce'
 import Upload from '../Upload'
-import watch from 'redux-watch'
-import store from '../../store'
+import SearchInput from '../SearchInput'
 
 const { Sider } = Layout
 
@@ -39,25 +36,13 @@ class Menu extends React.Component {
 
         this.state = {
             isOpen: window.innerWidth <= MOBILE_BREAKPOINT,
-            isMobile: window.innerWidth <= MOBILE_BREAKPOINT,
-            inputValue: ''
+            isMobile: window.innerWidth <= MOBILE_BREAKPOINT
         }
 
-        this.onSearch = this.onSearch.bind(this)
         this.toggleMenu = this.toggleMenu.bind(this)
         this.clearCache = this.clearCache.bind(this)
         this.onResize = debounce(this.onResize.bind(this), 500)
         this.renderConfirmPopper = this.renderConfirmPopper.bind(this)
-        this.updateInput = this.updateInput.bind(this)
-
-        const watcher = watch(store.getState, 'search.searchQuery')
-
-        // Since clicking on a dependency in the menu starts a search
-        // with a new query, we need to watch part of the store to
-        // make sure the search input value updates
-        this.unsubscribe = store.subscribe(
-            watcher(newValue => this.setState({ inputValue: newValue }))
-        )
     }
 
     componentDidMount() {
@@ -65,32 +50,11 @@ class Menu extends React.Component {
     }
 
     componentWillUnmount() {
-        this.unsubscribe()
         window.removeEventListener('resize', this.onResize)
     }
 
     toggleMenu() {
         this.setState({ isOpen: !this.state.isOpen })
-    }
-
-    onSearch(event) {
-        const inputValue = event.target.value.trim()
-
-        // Prevent searching for a package that was just searched
-        if (!inputValue || inputValue === this.props.searchQuery) {
-            return
-        }
-
-        // Taking focus away from the input closes the
-        // keyboard on mobile devices
-        event.target.blur()
-
-        this.props.searchPackage(inputValue)
-        this.setState({ inputValue })
-    }
-
-    updateInput(event) {
-        this.setState({ inputValue: event.target.value })
     }
 
     clearCache() {
@@ -159,17 +123,7 @@ class Menu extends React.Component {
                     />
 
                     <div className="menu-content">
-                        <div className="input-wrapper">
-                            <Input
-                                value={this.state.inputValue}
-                                className="input-search"
-                                placeholder="Search..."
-                                size="large"
-                                prefix={<SearchOutlined />}
-                                onPressEnter={this.onSearch}
-                                onChange={this.updateInput}
-                            />
-                        </div>
+                        <SearchInput />
                         <Row className="stats" justify="center" align="middle">
                             <Col span={12}>
                                 <Statistic
@@ -213,8 +167,7 @@ const mapStateToProps = state => ({
     isLoading: state.search.isLoading,
     packagesLoaded: state.search.packagesLoaded,
     packagesRemaining: state.search.packagesRemaining,
-    cacheSize: state.search.cacheSize,
-    searchQuery: state.search.searchQuery
+    cacheSize: state.search.cacheSize
 })
 
 const mapDispatchToProps = {

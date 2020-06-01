@@ -11,7 +11,10 @@ const cacheDependencies = (packageName, dependencies) => {
         localStorage.setItem('lastAccessed', Date.now())
         localStorage.setItem(packageName, JSON.stringify(data))
     } catch (err) {
+        // Errors here might happen if we try to store an
+        // item but localStorage is already full
         clearHalfCache()
+        clearSuggestions()
         store.dispatch(updateCacheSize())
     }
 }
@@ -59,9 +62,47 @@ const clearCache = () => {
     return length
 }
 
+const cacheSuggestions = (query, suggestions) => {
+    try {
+        // Suggestions are prefixed with s: so they don't
+        // clash with cached dependencies
+        localStorage.setItem(`s:${query}`, JSON.stringify(suggestions))
+        localStorage.setItem('lastAccessed', Date.now())
+    } catch (e) {
+        clearSuggestions()
+    }
+}
+
+const getSuggestionsFromCache = query => {
+    const suggestions = localStorage.getItem(`s:${query}`)
+
+    if (!suggestions) {
+        return null
+    }
+
+    try {
+        return JSON.parse(suggestions)
+    } catch (e) {
+        return null
+    }
+}
+
+const clearSuggestions = () => {
+    const suggestions = []
+
+    for (const key in localStorage) {
+        if (key.startsWith('s:')) {
+            suggestions.push(key)
+        }
+    }
+
+    suggestions.forEach(key => localStorage.removeItem(key))
+}
+
 /**
- * Removes the oldest half of the cache. Useful for when the cache gets
- * full but we don't want to completely empty it
+ * Removes the oldest half of cached dependencies.
+ * Useful for when the cache gets full but we don't
+ * want to completely empty it
  */
 const clearHalfCache = () => {
     const cache = []
@@ -90,4 +131,12 @@ const clearHalfCache = () => {
     }
 }
 
-export { cacheDependencies, getDependenciesFromCache, getCacheSize, clearCache }
+export {
+    cacheDependencies,
+    getDependenciesFromCache,
+    getCacheSize,
+    clearCache,
+    cacheSuggestions,
+    getSuggestionsFromCache,
+    clearSuggestions
+}

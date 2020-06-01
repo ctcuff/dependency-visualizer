@@ -1,5 +1,10 @@
 import { graphlib } from 'dagre'
-import { getDependenciesFromCache, cacheDependencies } from '../util/cache'
+import {
+    getDependenciesFromCache,
+    cacheDependencies,
+    cacheSuggestions,
+    getSuggestionsFromCache
+} from '../util/cache'
 
 const Graph = graphlib.Graph
 const noop = () => {}
@@ -44,10 +49,20 @@ const getDependenciesFromFile = async (packageName, dependencies, onProgressUpda
 
     root.setNode(packageName)
 
-    for (let i = 0; i < dependencies.length; i++) {
-        root.setEdge(packageName, dependencies[i])
-        await _getDependencies(dependencies[i], root, onProgressUpdate, result)
+    const _getDependenciesFromFile = async () => {
+        const promises = []
+
+        for (let i = 0; i < dependencies.length; i++) {
+            root.setEdge(packageName, dependencies[i])
+            promises.push(
+                _getDependencies(dependencies[i], root, onProgressUpdate, result)
+            )
+        }
+
+        return Promise.all(promises)
     }
+
+    await _getDependenciesFromFile()
 
     return root
 }
@@ -162,6 +177,34 @@ const getPackageDependencies = packageName => {
     })
 }
 
+const getSuggestions = query => {
+    const url = `https://registry.npmjs.org/-/v1/search?size=10&from=0&text="${encodeURIComponent(
+        query
+    )}"`
+    const cache = getSuggestionsFromCache(query)
+
+    return new Promise((resolve, reject) => {
+        if (cache) {
+            resolve(cache)
+            return
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(res => {
+                const suggestions = res.objects.map(obj => {
+                    return {
+                        name: obj.package.name,
+                        description: obj.package.description
+                    }
+                })
+                resolve(suggestions)
+                cacheSuggestions(query, suggestions)
+            })
+            .catch(err => reject(err))
+    })
+}
+
 /**
  * Turns a dagre graph object into a js object that can be parsed by vis.
  * The js object looks like this:
@@ -232,6 +275,7 @@ const graphToJson = (packageName, graph) => {
 const API = {
     getDependencies,
     getDependenciesFromFile,
+    getSuggestions,
     graphToJson
 }
 

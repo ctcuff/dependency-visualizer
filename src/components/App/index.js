@@ -16,6 +16,8 @@ const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
 
 const App = props => {
     useEffect(() => {
+        // Check to see if its been more than 24 hours since
+        // local storage was last read from
         const lastAccessed = localStorage.getItem('lastAccessed')
         if (lastAccessed) {
             if (Date.now() - lastAccessed >= CACHE_EXPIRATION_TIME) {

@@ -41,6 +41,10 @@ class Upload extends React.Component {
     }
 
     onFileLoaded() {
+        if (!this.inputRef.current) {
+            console.error('inputRef.current was null :(')
+            return
+        }
         // Reset the input value so users can
         // upload the same file multiple times
         this.inputRef.current.value = null
