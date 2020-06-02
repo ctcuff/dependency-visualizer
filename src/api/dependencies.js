@@ -46,23 +46,16 @@ const getDependencies = async (packageName, onProgressUpdate) => {
 const getDependenciesFromFile = async (packageName, dependencies, onProgressUpdate) => {
     const root = new Graph({ directed: true })
     const result = new Set()
+    const promises = []
 
     root.setNode(packageName)
 
-    const _getDependenciesFromFile = async () => {
-        const promises = []
+    dependencies.forEach(dep => {
+        root.setEdge(packageName, dep)
+        promises.push(_getDependencies(dep, root, onProgressUpdate, result))
+    })
 
-        for (let i = 0; i < dependencies.length; i++) {
-            root.setEdge(packageName, dependencies[i])
-            promises.push(
-                _getDependencies(dependencies[i], root, onProgressUpdate, result)
-            )
-        }
-
-        return Promise.all(promises)
-    }
-
-    await _getDependenciesFromFile()
+    await Promise.all(promises)
 
     return root
 }
@@ -111,8 +104,7 @@ const _getDependencies = async (
     // so we can look it up faster
     cacheDependencies(name, dependencies)
 
-    for (let i = 0; i < dependencies.length; i++) {
-        const dep = dependencies[i]
+    dependencies.forEach(dep => {
         remaining.push(dep)
 
         // Add each dependency call to a promise stack so we
@@ -129,7 +121,7 @@ const _getDependencies = async (
                 }
             )
         )
-    }
+    })
 
     return Promise.all(promises)
 }
@@ -164,6 +156,16 @@ const getPackageDependencies = packageName => {
                     return
                 }
                 res = await res.json()
+
+                // This usually happens if a package is internal or unpublished.
+                // These usually don't have any dependencies listed
+                if (!res['dist-tags'] || !res.versions) {
+                    resolve({
+                        dependencies: [],
+                        status: 200
+                    })
+                    return
+                }
 
                 const latestVersion = res['dist-tags'].latest
                 const versionInfo = res.versions[latestVersion]
@@ -248,22 +250,15 @@ const getSuggestions = query => {
  *```
  */
 const graphToJson = (packageName, graph) => {
-    const nodes = []
-    const edges = []
+    const nodes = graph.nodes().map(nodeName => ({
+        id: nodeName,
+        label: nodeName
+    }))
 
-    graph.nodes().forEach(nodeName => {
-        nodes.push({
-            id: nodeName,
-            label: nodeName
-        })
-    })
-
-    graph.edges().forEach(edge => {
-        edges.push({
-            from: edge.v,
-            to: edge.w
-        })
-    })
+    const edges = graph.edges().map(edge => ({
+        from: edge.v,
+        to: edge.w
+    }))
 
     return {
         rootNodeId: packageName,
