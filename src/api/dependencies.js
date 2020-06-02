@@ -152,6 +152,16 @@ const getPackageDependencies = packageName => {
                 }
                 res = await res.json()
 
+                // This usually happens if a package is internal or unpublished.
+                // These usually don't have any dependencies listed
+                if (!res['dist-tags'] || !res.versions) {
+                    resolve({
+                        dependencies: [],
+                        status: 200
+                    })
+                    return
+                }
+
                 const latestVersion = res['dist-tags'].latest
                 const versionInfo = res.versions[latestVersion]
 
