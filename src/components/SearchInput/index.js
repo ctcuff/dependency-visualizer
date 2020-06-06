@@ -7,7 +7,7 @@ import store from '../../store'
 import { searchPackage } from '../../store/actions/search'
 import { connect } from 'react-redux'
 import debounce from '../../util/debounce'
-import API from '../../api/dependencies'
+import API from '../../api'
 
 class SearchInput extends React.Component {
     constructor(props) {
@@ -100,7 +100,6 @@ class SearchInput extends React.Component {
     }
 
     getSuggestions(query) {
-        console.log('Staring search for', query)
         // Set state with a callback to make sure suggestions are
         // cleared before new suggestions are loaded
         this.setState({ suggestions: [] }, () => {
@@ -113,8 +112,8 @@ class SearchInput extends React.Component {
             return null
         }
 
-        // Pass in our own packagename prop so we can read
-        // it when a menu item is clicked
+        // Pass in our own packagename prop to each menu item
+        // so we can read it when a menu item is clicked
         return (
             <Menu onClick={this.onMenuItemClick} className="search-input--menu">
                 {this.state.suggestions.map((item, index) => (

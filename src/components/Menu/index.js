@@ -1,15 +1,6 @@
 import './menu.scss'
 import React from 'react'
-import {
-    Layout,
-    Statistic,
-    Row,
-    Col,
-    Divider,
-    Button,
-    Popconfirm,
-    message,
-} from 'antd'
+import { Layout, Statistic, Row, Col, Divider, Button, Popconfirm } from 'antd'
 import {
     MenuOutlined,
     LeftOutlined,
@@ -19,7 +10,7 @@ import {
 import { connect } from 'react-redux'
 import { searchPackage } from '../../store/actions/search'
 import PackageInfo from '../PackageInfo'
-import { clearCache } from '../../util/cache'
+import Cache from '../../util/cache'
 import debounce from '../../util/debounce'
 import Upload from '../Upload'
 import SearchInput from '../SearchInput'
@@ -40,7 +31,6 @@ class Menu extends React.Component {
         }
 
         this.toggleMenu = this.toggleMenu.bind(this)
-        this.clearCache = this.clearCache.bind(this)
         this.onResize = debounce(this.onResize.bind(this), 500)
         this.renderConfirmPopper = this.renderConfirmPopper.bind(this)
     }
@@ -57,39 +47,26 @@ class Menu extends React.Component {
         this.setState({ isOpen: !this.state.isOpen })
     }
 
-    clearCache() {
-        if (this.props.cacheSize === 0) {
-            return
-        }
-
-        const itemsCleared = clearCache()
-        message.success(`Cleared ${itemsCleared} entries`)
-    }
-
     onResize() {
         this.setState({ isMobile: window.innerWidth <= MOBILE_BREAKPOINT })
     }
 
     renderConfirmPopper() {
-        const isCacheEmpty = this.props.cacheSize === 0
+        if (this.props.cache.entries === 0 || this.props.cache.size === 0) {
+            return null
+        }
 
         return (
             <Popconfirm
-                icon={
-                    <DeleteOutlined style={{ color: isCacheEmpty ? 'green' : 'red' }} />
-                }
-                title={
-                    isCacheEmpty
-                        ? 'Nothing here yet. We cache packages to speed up load times.'
-                        : 'Are you sure? Loading may be slower.'
-                }
+                icon={<DeleteOutlined style={{ color: 'red' }} />}
+                title="'Are you sure? Loading will be slower."
                 placement="topLeft"
                 cancelText="Cancel"
-                onConfirm={this.clearCache}
+                onConfirm={Cache.clear}
             >
                 <div className="menu-footer">
-                    <small>Clear cache: {this.props.cacheSize.toFixed(2)} KB</small>
-                    <small>{localStorage.length} entries</small>
+                    <small>Clear cache: {this.props.cache.size.toFixed(2)} KB</small>
+                    <small>{this.props.cache.entries} entries</small>
                 </div>
             </Popconfirm>
         )
@@ -167,7 +144,7 @@ const mapStateToProps = state => ({
     isLoading: state.search.isLoading,
     packagesLoaded: state.search.packagesLoaded,
     packagesRemaining: state.search.packagesRemaining,
-    cacheSize: state.search.cacheSize
+    cache: state.search.cache
 })
 
 const mapDispatchToProps = {

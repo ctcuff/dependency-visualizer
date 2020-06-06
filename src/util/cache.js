@@ -1,142 +1,105 @@
-import store from '../store'
 import { updateCacheSize } from '../store/actions/search'
+import localforage from 'localforage'
+import store from '../store'
 
-const cacheDependencies = (packageName, dependencies) => {
-    const data = {
-        dependencies,
-        storedAt: Date.now()
-    }
-
-    try {
-        localStorage.setItem('lastAccessed', Date.now())
-        localStorage.setItem(packageName, JSON.stringify(data))
-    } catch (err) {
-        // Errors here might happen if we try to store an
-        // item but localStorage is already full
-        clearHalfCache()
-        clearSuggestions()
-        store.dispatch(updateCacheSize())
-    }
-}
-
-const getDependenciesFromCache = packageName => {
-    const cache = localStorage.getItem(packageName)
-
-    if (!cache) {
-        return null
-    }
-
-    try {
-        const dependencies = JSON.parse(cache).dependencies
-        return Array.from(dependencies)
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error parsing cache', err)
-        return null
-    }
-}
+// The amount of time before data in localStorage
+// gets cleared (in milliseconds)
+const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
 
 /**
- * Returns the size of localStorage in kilobytes
+ * A wrapper around localforage. localforage uses
+ * indexedDB which means we can read from it without
+ * blocking the DOM like localStorage does.
  */
-const getCacheSize = () => {
-    let total = 0
+class Cache {
+    static async init() {
+        const lastAccessed = await localforage.getItem('lastAccessed')
 
-    for (const item in localStorage) {
-        if (!localStorage.hasOwnProperty(item)) {
-            continue
+        // Check to see if its been more than 24 hours since
+        // local storage was last read from
+        if (lastAccessed && Date.now() - lastAccessed > CACHE_EXPIRATION_TIME) {
+            Cache.clear()
         }
 
-        total += (localStorage[item].length + item.length) * 2
+        const entries = await Cache.entries()
+        const size = await Cache.size()
+
+        store.dispatch(updateCacheSize(entries, size))
+
+        // Not using localforage here since suggestions
+        // to be don't need persisted across reloads
+        this._suggestions = {}
     }
 
-    return total / 1024
-}
-
-const clearCache = () => {
-    const length = localStorage.length
-
-    localStorage.clear()
-    store.dispatch(updateCacheSize())
-
-    return length
-}
-
-const cacheSuggestions = (query, suggestions) => {
-    try {
-        // Suggestions are prefixed with s: so they don't
-        // clash with cached dependencies
-        localStorage.setItem(`s:${query}`, JSON.stringify(suggestions))
-        localStorage.setItem('lastAccessed', Date.now())
-    } catch (e) {
-        clearSuggestions()
-    }
-}
-
-const getSuggestionsFromCache = query => {
-    const suggestions = localStorage.getItem(`s:${query}`)
-
-    if (!suggestions) {
-        return null
-    }
-
-    try {
-        return JSON.parse(suggestions)
-    } catch (e) {
-        return null
-    }
-}
-
-const clearSuggestions = () => {
-    const suggestions = []
-
-    for (const key in localStorage) {
-        if (key.startsWith('s:')) {
-            suggestions.push(key)
+    static cacheDependencies(packageName, dependencies) {
+        try {
+            // Errors here might happen if we try to store an
+            // item but the cache is already full
+            localforage.setItem('lastAccessed', Date.now())
+            localforage.setItem(packageName, dependencies)
+        } catch (e) {
+            Cache.clear()
         }
     }
 
-    suggestions.forEach(key => localStorage.removeItem(key))
-}
-
-/**
- * Removes the oldest half of cached dependencies.
- * Useful for when the cache gets full but we don't
- * want to completely empty it
- */
-const clearHalfCache = () => {
-    const cache = []
-
-    for (const key in localStorage) {
-        let item = localStorage.getItem(key)
-
-        if (item && item.includes('dependencies')) {
-            try {
-                item = JSON.parse(item)
-                cache.push({
-                    key,
-                    storedAt: item.storedAt
-                })
-            } catch (err) {
-                // eslint-disable-next-line no-console
-                console.error('Error retrieving dependency from cache', err)
-            }
+    static async getDependencies(packageName) {
+        try {
+            const dependencies = await localforage.getItem(packageName)
+            return dependencies
+        } catch (e) {
+            return null
         }
     }
 
-    cache.sort((a, b) => a.storedAt - b.storedAt)
+    static async clear() {
+        try {
+            await localforage.clear()
+            store.dispatch(updateCacheSize(0, 0))
+        } catch (e) {}
+    }
 
-    for (let i = 0; i < Math.ceil(cache.length / 2); i++) {
-        localStorage.removeItem(cache[i].key)
+    /**
+     * Returns the number of items in the cache
+     */
+    static async entries() {
+        try {
+            const entries = await localforage.length()
+            return entries
+        } catch (e) {
+            return 0
+        }
+    }
+
+    /**
+     * Return the size of the cache in KB
+     */
+    static async size() {
+        let total = 0
+
+        try {
+            await localforage.iterate((value, key) => {
+                // A character in JS takes up 2 bytes
+                total += key.length * 2
+                if (Array.isArray(value)) {
+                    value.forEach(val => (total += val.length * 2))
+                }
+            })
+        } catch (e) {}
+
+        return total / 1024
+    }
+
+    static cacheSuggestions(packageName, suggestions) {
+        this._suggestions[packageName] = suggestions
+    }
+
+    static getSuggestions(packageName) {
+        return this._suggestions[packageName]
     }
 }
 
-export {
-    cacheDependencies,
-    getDependenciesFromCache,
-    getCacheSize,
-    clearCache,
-    cacheSuggestions,
-    getSuggestionsFromCache,
-    clearSuggestions
-}
+Cache.init()
+
+window._Cache = Cache
+
+export default Cache

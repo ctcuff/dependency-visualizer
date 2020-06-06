@@ -7,8 +7,9 @@ import {
 } from './types'
 import { updateGraphData } from './graph'
 import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
-import { getCacheSize } from '../../util/cache'
-import API from '../../api/dependencies'
+import { graphToJson } from '../../util/graph'
+import Cache from '../../util/cache'
+import API from '../../api'
 import Errors from '../../util/errors'
 
 const searchStart = query => ({
@@ -25,9 +26,10 @@ const searchError = errorCode => ({
     errorCode
 })
 
-const updateCacheSize = () => ({
+const updateCacheSize = (entries, size) => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
-    cacheSize: getCacheSize()
+    entries,
+    size
 })
 
 const updateSearchProgress = (packagesRemaining, packagesLoaded, packageName) => ({
@@ -49,22 +51,22 @@ const searchPackage = query => {
 
         // Not using catch here since errors in dispatch
         // might trigger the catch block
-        API.getDependencies(query, onProgressUpdate)
-            .then(
-                async graph => {
-                    const data = API.graphToJson(query, graph)
-                    dispatch(searchFinished())
-                    dispatch(updateGraphData(data))
-                },
-                error => {
-                    // eslint-disable-next-line no-console
-                    console.error(error)
-                    dispatch(searchError(Errors.NOT_FOUND))
-                }
-            )
-            .finally(() => {
-                dispatch(updateCacheSize())
-            })
+        API.getDependencies(query, onProgressUpdate).then(
+            async graph => {
+                const data = graphToJson(query, graph)
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
+
+                const entries = await Cache.entries()
+                const size = await Cache.size()
+                dispatch(updateCacheSize(entries, size))
+            },
+            error => {
+                // eslint-disable-next-line no-console
+                console.error(error)
+                dispatch(searchError(Errors.NOT_FOUND))
+            }
+        )
     }
 }
 
@@ -78,22 +80,22 @@ const getDependenciesFromJsonFile = json => {
 
         dispatch(setPackageInfoFromJson(json))
 
-        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
-            .then(
-                graph => {
-                    const data = API.graphToJson(json.name, graph)
-                    dispatch(searchFinished())
-                    dispatch(updateGraphData(data))
-                },
-                error => {
-                    // eslint-disable-next-line no-console
-                    console.error(error)
-                    dispatch(searchError(Errors.FILE_READ_ERROR))
-                }
-            )
-            .finally(() => {
-                dispatch(updateCacheSize())
-            })
+        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate).then(
+            async graph => {
+                const data = graphToJson(json.name, graph)
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
+
+                const entries = await Cache.entries()
+                const size = await Cache.size()
+                dispatch(updateCacheSize(entries, size))
+            },
+            error => {
+                // eslint-disable-next-line no-console
+                console.error(error)
+                dispatch(searchError(Errors.FILE_READ_ERROR))
+            }
+        )
     }
 }
 
