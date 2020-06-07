@@ -52,13 +52,13 @@ const searchPackage = query => {
         // Not using catch here since errors in dispatch
         // might trigger the catch block
         API.getDependencies(query, onProgressUpdate).then(
-            async graph => {
+            graph => {
                 const data = graphToJson(query, graph)
                 dispatch(searchFinished())
                 dispatch(updateGraphData(data))
 
-                const entries = await Cache.entries()
-                const size = await Cache.size()
+                const entries = Cache.getEntries()
+                const size = Cache.getSize()
                 dispatch(updateCacheSize(entries, size))
             },
             error => {
@@ -81,13 +81,13 @@ const getDependenciesFromJsonFile = json => {
         dispatch(setPackageInfoFromJson(json))
 
         API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate).then(
-            async graph => {
+            graph => {
                 const data = graphToJson(json.name, graph)
                 dispatch(searchFinished())
                 dispatch(updateGraphData(data))
 
-                const entries = await Cache.entries()
-                const size = await Cache.size()
+                const entries = Cache.getEntries()
+                const size = Cache.getSize()
                 dispatch(updateCacheSize(entries, size))
             },
             error => {

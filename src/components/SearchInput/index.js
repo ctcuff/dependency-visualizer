@@ -108,7 +108,11 @@ class SearchInput extends React.Component {
     }
 
     renderSuggestions() {
-        if (!this.state.inputValue.trim() || !this.state.isInputFocused) {
+        if (
+            !this.state.inputValue.trim() ||
+            !this.state.isInputFocused ||
+            this.state.suggestions.length === 0
+        ) {
             return null
         }
 

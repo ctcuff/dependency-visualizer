@@ -52,21 +52,30 @@ class Menu extends React.Component {
     }
 
     renderConfirmPopper() {
-        if (this.props.cache.entries === 0 || this.props.cache.size === 0) {
-            return null
-        }
+        const { size, entries } = this.props.cache
+        const isCacheEmpty = entries === 0
 
         return (
             <Popconfirm
-                icon={<DeleteOutlined style={{ color: 'red' }} />}
-                title="'Are you sure? Loading will be slower."
+                icon={
+                    <DeleteOutlined style={{ color: isCacheEmpty ? 'green' : 'red' }} />
+                }
+                title={
+                    isCacheEmpty
+                        ? 'Nothing here yet. We cache packages to speed up load times.'
+                        : 'Are you sure? Loading may be slower.'
+                }
                 placement="topLeft"
                 cancelText="Cancel"
-                onConfirm={Cache.clear}
+                onConfirm={
+                    // Sometimes the popup will re-render while closing.
+                    // Delaying clearing the cache prevents this.
+                    () => setTimeout(Cache.clear, 500)
+                }
             >
                 <div className="menu-footer">
-                    <small>Clear cache: {this.props.cache.size.toFixed(2)} KB</small>
-                    <small>{this.props.cache.entries} entries</small>
+                    <small>Clear cache: {size.toFixed(2)} KB</small>
+                    <small>{entries} entries</small>
                 </div>
             </Popconfirm>
         )

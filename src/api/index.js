@@ -2,7 +2,6 @@ import { graphlib } from 'dagre'
 import Cache from '../util/cache'
 
 const Graph = graphlib.Graph
-window.Graph = Graph
 const noop = () => {}
 
 /**
@@ -84,7 +83,7 @@ const _getDependencies = async (
 
     seen[name] = true
 
-    let dependencies = await Cache.getDependencies(name)
+    let dependencies = Cache.getDependencies(name)
 
     if (!dependencies) {
         const res = await getPackageDependencies(name)
@@ -96,7 +95,7 @@ const _getDependencies = async (
 
     const promises = []
 
-    // Add this module's dependencies to a cache
+    // Cache this module's dependencies
     // so we can look it up faster
     Cache.cacheDependencies(name, dependencies)
 
