@@ -56,8 +56,12 @@ class SearchInput extends React.Component {
     }
 
     updateInputValue(event) {
-        const inputValue = event.target.value.trim()
+        let inputValue = event.target.value
+        // inputValue in the state isn't trimmed so
+        // we can allow spaces to be entered
         this.setState({ inputValue })
+
+        inputValue = inputValue.trim()
 
         if (inputValue) {
             this.getSuggestions(inputValue)
