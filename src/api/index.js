@@ -1,5 +1,5 @@
 import { graphlib } from 'dagre'
-import { getDependenciesFromCache, cacheDependencies } from '../util/cache'
+import Cache from '../util/cache'
 
 const Graph = graphlib.Graph
 const noop = () => {}
@@ -83,7 +83,7 @@ const _getDependencies = async (
 
     seen[name] = true
 
-    let dependencies = getDependenciesFromCache(name)
+    let dependencies = Cache.getDependencies(name)
 
     if (!dependencies) {
         const res = await getPackageDependencies(name)
@@ -95,9 +95,9 @@ const _getDependencies = async (
 
     const promises = []
 
-    // Add this module's dependencies to localStorage
+    // Cache this module's dependencies
     // so we can look it up faster
-    cacheDependencies(name, dependencies)
+    Cache.cacheDependencies(name, dependencies)
 
     dependencies.forEach(dep => {
         remaining.push(dep)
@@ -130,14 +130,7 @@ const doesPackageExist = packageName => {
 }
 
 const getPackageDependencies = packageName => {
-    return new Promise((resolve, reject) => {
-        const dependencies = getDependenciesFromCache(packageName)
-
-        if (dependencies) {
-            resolve(dependencies)
-            return
-        }
-
+    return new Promise(async (resolve, reject) => {
         fetch(`https://registry.npmjs.cf/${encodeURIComponent(packageName)}`)
             .then(async res => {
                 // Resolve the error status instead of rejecting so we can
@@ -174,70 +167,37 @@ const getPackageDependencies = packageName => {
     })
 }
 
-/**
- * Turns a dagre graph object into a js object that can be parsed by vis.
- * The js object looks like this:
- *
- * ```
- * {
- *       "rootNodeId": "cookies",
- *       "nodes": [
- *          {
- *             "id": "cookies",
- *             "label": "cookies"
- *          },
- *          {
- *             "id": "depd",
- *             "label": "depd"
- *          },
- *          {
- *             "id": "keygrip",
- *             "label": "keygrip"
- *          },
- *          {
- *             "id": "tsscmp",
- *             "label": "tsscmp"
- *          }
- *       ],
- *       "edges": [
- *          {
- *             "from": "cookies",
- *             "to": "depd"
- *          },
- *          {
- *             "from": "cookies",
- *             "to": "keygrip"
- *          },
- *          {
- *             "from": "keygrip",
- *             "to": "tsscmp"
- *          }
- *       ]
- * }
- *```
- */
-const graphToJson = (packageName, graph) => {
-    const nodes = graph.nodes().map(nodeName => ({
-        id: nodeName,
-        label: nodeName
-    }))
+const getSuggestions = query => {
+    const url = `https://registry.npmjs.org/-/v1/search?size=10&from=0&text="${encodeURIComponent(
+        query
+    )}"`
+    const cached = Cache.getSuggestions(query)
 
-    const edges = graph.edges().map(edge => ({
-        from: edge.v,
-        to: edge.w
-    }))
+    return new Promise((resolve, reject) => {
+        if (cached) {
+            resolve(cached)
+            return
+        }
 
-    return {
-        rootNodeId: packageName,
-        nodes,
-        edges
-    }
+        fetch(url)
+            .then(res => res.json())
+            .then(res => {
+                const suggestions = res.objects.map(obj => ({
+                    name: obj.package.name,
+                    description: obj.package.description
+                }))
+                resolve(suggestions)
+
+                Cache.cacheSuggestions(query, suggestions)
+            })
+            .catch(err => reject(err))
+    })
 }
 
 const API = {
     getDependencies,
     getDependenciesFromFile,
-    graphToJson
+    getSuggestions
 }
 
 export default API
