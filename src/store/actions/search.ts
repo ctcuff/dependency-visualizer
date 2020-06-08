@@ -7,37 +7,12 @@ import {
     SEARCH_ERROR
 } from './types'
 import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
-import { getCacheSize } from '../../util/cache'
-import API from '../../api/dependencies'
+import { graphToJson } from '../../util/graph'
+import Cache from '../../util/cache'
+import API from '../../api'
 import Errors from '../../util/errors'
 import { ActionCreator, Dispatch } from 'redux'
 import { PackageJson } from './package'
-
-type SearchStart = {
-    type: typeof SEARCH_STARTED
-    query: string
-}
-
-type SearchFinished = {
-    type: typeof SEARCH_FINISHED
-}
-
-type SearchError = {
-    type: typeof SEARCH_ERROR
-    errorCode: number
-}
-
-type SearchUpdateCache = {
-    type: typeof SEARCH_UPDATE_CACHE_SIZE
-    cacheSize: number
-}
-
-type SearchUpdateProgress = {
-    type: typeof SEARCH_PROGRESS
-    packagesLoaded: number
-    packagesRemaining: number
-    currentPackageLoaded: string
-}
 
 const searchStart = (query: string): SearchAction => ({
     type: SEARCH_STARTED,
@@ -53,13 +28,17 @@ const searchError = (errorCode: number): SearchAction => ({
     errorCode
 })
 
-const updateCacheSize = (): SearchAction => ({
+const updateCacheSize = (entries: number, size: number): SearchUpdateCache => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
-    cacheSize: getCacheSize()
+    entries,
+    size
 })
 
-// prettier-ignore
-const updateSearchProgress = (remaining: number, loaded: number, name: string): SearchAction => ({
+const updateSearchProgress = (
+    remaining: number,
+    loaded: number,
+    name: string
+): SearchAction => ({
     type: SEARCH_PROGRESS,
     packagesLoaded: loaded,
     packagesRemaining: remaining,
@@ -82,22 +61,22 @@ const searchPackage = (query: string): ActionCreator<void> => {
 
         // Not using catch here since errors in dispatch
         // might trigger the catch block
-        API.getDependencies(query, onProgressUpdate)
-            .then(
-                async graph => {
-                    const data = API.graphToJson(query, graph)
-                    dispatch(searchFinished())
-                    dispatch(updateGraphData(data))
-                },
-                error => {
-                    // eslint-disable-next-line no-console
-                    console.error(error)
-                    dispatch(searchError(Errors.NOT_FOUND))
-                }
-            )
-            .finally(() => {
-                dispatch(updateCacheSize())
-            })
+        API.getDependencies(query, onProgressUpdate).then(
+            graph => {
+                const data = graphToJson(query, graph)
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
+
+                const entries = Cache.getEntries()
+                const size = Cache.getSize()
+                dispatch(updateCacheSize(entries, size))
+            },
+            error => {
+                // eslint-disable-next-line no-console
+                console.error(error)
+                dispatch(searchError(Errors.NOT_FOUND))
+            }
+        )
     }
 }
 
@@ -114,23 +93,50 @@ const getDependenciesFromJsonFile = (json: PackageJson): ActionCreator<void> => 
         const dependencies = Object.keys(json.dependencies)
         dispatch(setPackageInfoFromJson(json))
 
-        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate)
-            .then(
-                graph => {
-                    const data = API.graphToJson(json.name, graph)
-                    dispatch(searchFinished())
-                    dispatch(updateGraphData(data))
-                },
-                error => {
-                    // eslint-disable-next-line no-console
-                    console.error(error)
-                    dispatch(searchError(Errors.FILE_READ_ERROR))
-                }
-            )
-            .finally(() => {
-                dispatch(updateCacheSize())
-            })
+        API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate).then(
+            graph => {
+                const data = graphToJson(json.name, graph)
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
+
+                const entries = Cache.getEntries()
+                const size = Cache.getSize()
+                dispatch(updateCacheSize(entries, size))
+            },
+            error => {
+                // eslint-disable-next-line no-console
+                console.error(error)
+                dispatch(searchError(Errors.FILE_READ_ERROR))
+            }
+        )
     }
+}
+
+type SearchStart = {
+    type: typeof SEARCH_STARTED
+    query: string
+}
+
+type SearchFinished = {
+    type: typeof SEARCH_FINISHED
+}
+
+type SearchError = {
+    type: typeof SEARCH_ERROR
+    errorCode: number
+}
+
+type SearchUpdateCache = {
+    type: typeof SEARCH_UPDATE_CACHE_SIZE
+    entries: number
+    size: number
+}
+
+type SearchUpdateProgress = {
+    type: typeof SEARCH_PROGRESS
+    packagesLoaded: number
+    packagesRemaining: number
+    currentPackageLoaded: string
 }
 
 export type SearchAction =
