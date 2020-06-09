@@ -28,7 +28,7 @@ const searchError = (errorCode: number): SearchAction => ({
     errorCode
 })
 
-const updateCacheSize = (entries: number, size: number): SearchUpdateCache => ({
+const updateCacheSize = (entries: number, size: number): SearchAction => ({
     type: SEARCH_UPDATE_CACHE_SIZE,
     entries,
     size

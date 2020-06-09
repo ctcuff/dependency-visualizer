@@ -6,12 +6,6 @@ import {
 } from '../actions/types'
 import { PackageDetails, PackageAction } from '../actions/package'
 
-type PackageState = {
-    errorCode: number | null
-    isLoading: boolean
-    packageInfo: PackageDetails | null
-}
-
 const initialState: PackageState = {
     errorCode: null,
     isLoading: false,
@@ -44,6 +38,12 @@ const packageReducer = (state = initialState, action: PackageAction): PackageSta
         default:
             return state
     }
+}
+
+type PackageState = {
+    errorCode: number | null
+    isLoading: boolean
+    packageInfo: PackageDetails | null
 }
 
 export default packageReducer

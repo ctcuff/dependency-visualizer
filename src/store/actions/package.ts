@@ -7,24 +7,6 @@ import {
 import Errors from '../../util/errors'
 import { ActionCreator, Dispatch } from 'redux'
 
-type PackageSetInfo = {
-    type: typeof SET_PACKAGE_INFO
-    packageInfo: PackageDetails
-}
-
-type PackageError = {
-    type: typeof PACKAGE_INFO_ERROR
-    errorCode: number
-}
-
-type PackageSearchStart = {
-    type: typeof PACKAGE_INFO_SEARCH_START
-}
-
-type PackageClearInfo = {
-    type: typeof CLEAR_PACKAGE_INFO
-}
-
 // data is the JSON response returned from the api.npms.io
 const setPackageInfo = (data: any): PackageAction => {
     let stars = null
@@ -126,12 +108,29 @@ const clearPackageInfo = (): PackageAction => ({
     type: CLEAR_PACKAGE_INFO
 })
 
+type PackageSetInfo = {
+    type: typeof SET_PACKAGE_INFO
+    packageInfo: PackageDetails
+}
+
+type PackageError = {
+    type: typeof PACKAGE_INFO_ERROR
+    errorCode: number
+}
+
+type PackageSearchStart = {
+    type: typeof PACKAGE_INFO_SEARCH_START
+}
+
+type PackageClearInfo = {
+    type: typeof CLEAR_PACKAGE_INFO
+}
+
 export type PackageAction =
     | PackageSetInfo
     | PackageError
     | PackageSearchStart
     | PackageClearInfo
-export type PackageInfo = Pick<PackageSetInfo, 'packageInfo'>
 
 export type PackageJson = {
     name: string

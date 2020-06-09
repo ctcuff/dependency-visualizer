@@ -1,16 +1,6 @@
 import { UPDATE_GRAPH_DATA } from '../actions/types'
 import { GraphAction } from '../actions/graph'
 
-type GraphNode = {
-    id: string
-    label: string
-}
-
-type GraphEdge = {
-    from: string
-    to: string
-}
-
 const initialState: GraphState = {
     rootNodeId: '',
     nodes: [],
@@ -26,6 +16,16 @@ const graphReducer = (state = initialState, action: GraphAction): GraphState => 
         default:
             return state
     }
+}
+
+type GraphNode = {
+    id: string
+    label: string
+}
+
+type GraphEdge = {
+    from: string
+    to: string
 }
 
 export type GraphState = {
