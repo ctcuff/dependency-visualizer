@@ -51,7 +51,7 @@
         "**/*.scss": [
             "stylelint"
         ],
-        "./src/**/*.js": [
+        "./src/**/*{.js,.ts}": [
             "prettier --write",
             "yarn lint"
         ]
