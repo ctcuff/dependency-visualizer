@@ -72,7 +72,7 @@ type SearchState = {
     currentPackageLoaded: string
     errorCode: null | number
     cache: {
-        entries: number,
+        entries: number
         size: number
     }
 }

@@ -29,6 +29,7 @@
         "vis-network": "^7.6.4"
     },
     "devDependencies": {
+        "@types/dagre": "^0.7.44",
         "@types/react-redux": "^7.1.9",
         "@typescript-eslint/eslint-plugin": "^3.0.2",
         "@typescript-eslint/parser": "^3.0.2",
