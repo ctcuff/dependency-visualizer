@@ -7,7 +7,6 @@ import {
     SEARCH_ERROR
 } from './types'
 import { clearPackageInfo, getPackageInfo, setPackageInfoFromJson } from './package'
-import { graphToJson } from '../../util/graph'
 import Cache from '../../util/cache'
 import API from '../../api'
 import Errors from '../../util/errors'
@@ -62,13 +61,12 @@ const searchPackage = (query: string): ActionCreator<void> => {
         // Not using catch here since errors in dispatch
         // might trigger the catch block
         API.getDependencies(query, onProgressUpdate).then(
-            graph => {
-                const data = graphToJson(query, graph)
-                dispatch(searchFinished())
-                dispatch(updateGraphData(data))
-
+            data => {
                 const entries = Cache.getEntries()
                 const size = Cache.getSize()
+
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
                 dispatch(updateCacheSize(entries, size))
             },
             error => {
@@ -94,13 +92,12 @@ const getDependenciesFromJsonFile = (json: PackageJson): ActionCreator<void> => 
         dispatch(setPackageInfoFromJson(json))
 
         API.getDependenciesFromFile(json.name, dependencies, onProgressUpdate).then(
-            graph => {
-                const data = graphToJson(json.name, graph)
-                dispatch(searchFinished())
-                dispatch(updateGraphData(data))
-
+            data => {
                 const entries = Cache.getEntries()
                 const size = Cache.getSize()
+
+                dispatch(searchFinished())
+                dispatch(updateGraphData(data))
                 dispatch(updateCacheSize(entries, size))
             },
             error => {

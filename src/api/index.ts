@@ -1,6 +1,6 @@
 import { graphlib } from 'dagre'
-import Cache from '../util/cache'
-import { Suggestion } from '../util/cache'
+import Cache, { Suggestion } from '../util/cache'
+import { GraphJson, graphToJson } from '../util/graph'
 
 const Graph = graphlib.Graph
 
@@ -11,9 +11,10 @@ const Graph = graphlib.Graph
 const getDependencies = async (
     packageName: string,
     onProgressUpdate: OnProgressUpdate
-): Promise<Graph> => {
+): Promise<GraphJson> => {
     // Since _getPackageDependencies doesn't fail when it receives
     // a 404, we need to check if the package actually exists first
+    // so we can show the 404 error page
     const exists = await doesPackageExist(packageName)
 
     if (!exists) {
@@ -26,19 +27,20 @@ const getDependencies = async (
 
     await _getDependencies(packageName, root, onProgressUpdate)
 
-    return root
+    return graphToJson(packageName, root)
 }
 
 /**
  * Searches for every dependency from a package.json file.
- * Note that this function doesn't care about 404 errors it might get
- * from searching the npm registry.
+ * This function doesn't care about 404 errors it might get
+ * from searching the npm registry since some packages listed in
+ * a package.json file might not be hosted on npm servers.
  */
 const getDependenciesFromFile = async (
     packageName: string,
     dependencies: string[],
     onProgressUpdate: OnProgressUpdate
-): Promise<Graph> => {
+): Promise<GraphJson> => {
     const root = new Graph({ directed: true })
     const result = new Set<string>()
     const promises: Promise<void | void[]>[] = []
@@ -52,7 +54,7 @@ const getDependenciesFromFile = async (
 
     await Promise.all(promises)
 
-    return root
+    return graphToJson(packageName, root)
 }
 
 /**
@@ -82,17 +84,9 @@ const _getDependencies = async (
 
     seen[name] = true
 
-    let dependencies = Cache.getDependencies(name)
-
-    if (dependencies === null) {
-        const res = await getPackageDependencies(name)
-        if (res.status !== 200) {
-            return
-        }
-        dependencies = res.dependencies
-    }
-
     const promises: Promise<void>[] = []
+    const dependencies =
+        Cache.getDependencies(name) || (await getPackageDependencies(name))
 
     // Cache this module's dependencies
     // so we can look it up faster
@@ -128,41 +122,24 @@ const doesPackageExist = (packageName: string): Promise<boolean> => {
     })
 }
 
-const getPackageDependencies = (packageName: string): Promise<DependencyResponse> => {
-    return new Promise((resolve, reject) => {
+const getPackageDependencies = (packageName: string): Promise<Array<string>> => {
+    return new Promise(resolve => {
         fetch(`https://registry.npmjs.cf/${encodeURIComponent(packageName)}`)
-            .then(async res => {
-                // Resolve the error status instead of rejecting so we can
-                // keep recursively searching for packages in other functions
-                // without making Promise.all fail
-                if (res.status !== 200) {
-                    resolve({
-                        dependencies: [],
-                        status: res.status
-                    })
-                    return
-                }
-                const data: RegistryResponse = await res.json()
-
-                // This usually happens if a package is internal or unpublished.
-                // These usually don't have any dependencies listed
-                if (!data['dist-tags'] || !data.versions) {
-                    resolve({
-                        dependencies: [] as string[],
-                        status: 200
-                    })
+            .then(res => res.json())
+            .then((res: RegistryResponse) => {
+                // This happens if a package doesn't exist, is internal,
+                // or is unpublished. Instead of failing, an empty array
+                // is resolved so we don't fail any Promise.all calls.
+                if (!res['dist-tags'] || !res.versions) {
+                    resolve([])
                     return
                 }
 
-                const latestVersion = data['dist-tags'].latest
-                const versionInfo = data.versions[latestVersion]
+                const latestVersion = res['dist-tags'].latest
+                const versionInfo = res.versions[latestVersion]
 
-                resolve({
-                    dependencies: Object.keys(versionInfo.dependencies || []),
-                    status: 200
-                })
+                resolve(Object.keys(versionInfo.dependencies || []))
             })
-            .catch(err => reject(err))
     })
 }
 
@@ -202,11 +179,6 @@ const API = {
 type Graph = graphlib.Graph
 
 type OnProgressUpdate = (remaining: number, result: number, name: string) => void
-
-type DependencyResponse = {
-    dependencies: string[]
-    status: number
-}
 
 type RegistryPackageResponse = {
     'dist-tags'?: {
