@@ -59,7 +59,10 @@ class SearchInput extends React.Component {
         let inputValue = event.target.value
         // inputValue in the state isn't trimmed so
         // we can allow spaces to be entered
-        this.setState({ inputValue })
+        this.setState({
+            inputValue,
+            suggestions: []
+        })
 
         inputValue = inputValue.trim()
 
@@ -104,11 +107,7 @@ class SearchInput extends React.Component {
     }
 
     getSuggestions(query) {
-        // Set state with a callback to make sure suggestions are
-        // cleared before new suggestions are loaded
-        this.setState({ suggestions: [] }, () => {
-            API.getSuggestions(query).then(suggestions => this.setState({ suggestions }))
-        })
+        API.getSuggestions(query).then(suggestions => this.setState({ suggestions }))
     }
 
     renderSuggestions() {
