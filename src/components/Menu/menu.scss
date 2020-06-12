@@ -3,6 +3,11 @@ $border-color: lightgrey;
 .menu {
     z-index: 3;
 
+    // stylelint-disable-next-line
+    @media screen and (max-width: 650px) {
+        position: absolute;
+    }
+
     .menu-open-btn {
         position: absolute;
         margin: 1em;
@@ -16,6 +21,9 @@ $border-color: lightgrey;
         // search bar on some browsers so we need to unset
         // ant's menu height and use the parent height
         height: unset;
+        // Keeps the menu content from squishing together
+        // when it's opened and closed
+        min-width: 22em;
     }
 
     .sider {
