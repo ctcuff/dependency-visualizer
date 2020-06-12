@@ -22,13 +22,15 @@
     justify-content: center;
     align-items: center;
     height: 90vh;
-    // Keeps the content in the container from being
-    // squished together when the menu is opened
-    // min-width: 100vw;
 
     .message {
         width: 50%;
         margin: 0 auto;
+
+        // stylelint-disable-next-line
+        @media screen and (max-width: 650px) {
+            width: 90%;
+        }
     }
 
     img {

@@ -7,6 +7,11 @@
     .message {
         width: 50%;
         margin: 0 auto;
+
+        // stylelint-disable-next-line
+        @media screen and (max-width: 650px) {
+            width: 90%;
+        }
     }
 
     img {
