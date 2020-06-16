@@ -76,7 +76,7 @@ const _getDependencies = async (
     onProgressUpdate: OnProgressUpdate,
     result: Set<string> = new Set(),
     seen: { [key: string]: boolean } = {},
-    remaining: Array<string> = []
+    remaining: string[] = []
 ): Promise<void | void[]> => {
     if (seen[name]) {
         return
@@ -122,7 +122,7 @@ const doesPackageExist = (packageName: string): Promise<boolean> => {
     })
 }
 
-const getPackageDependencies = (packageName: string): Promise<Array<string>> => {
+const getPackageDependencies = (packageName: string): Promise<string[]> => {
     return new Promise(resolve => {
         fetch(`https://registry.npmjs.cf/${encodeURIComponent(packageName)}`)
             .then(res => res.json())
