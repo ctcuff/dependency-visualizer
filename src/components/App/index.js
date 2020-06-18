@@ -1,4 +1,4 @@
-import './App.scss'
+import './app.scss'
 import React from 'react'
 import DependencyGraph from '../DependencyGraph'
 import LoadingOverlay from '../LoadingOverlay'
