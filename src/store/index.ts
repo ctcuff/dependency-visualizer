@@ -4,6 +4,7 @@ import searchReducer from './reducers/search'
 import graphReducer from './reducers/graph'
 import packageReducer from './reducers/package'
 
+// @ts-ignore
 const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 const reducer = combineReducers({
@@ -14,4 +15,5 @@ const reducer = combineReducers({
 
 const store = createStore(reducer, storeEnhancers(applyMiddleware(thunk)))
 
+export type RootState = ReturnType<typeof reducer>
 export default store

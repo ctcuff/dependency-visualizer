@@ -1,5 +1,22 @@
 {
-    "extends": ["react-app", "plugin:react/recommended"],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
     "rules": {
         "semi": ["error", "never"],
         "no-console": "error",
@@ -15,6 +32,36 @@
               "when": "never"
             }
         }],
-        "react/prop-types": 0
-    }
+        "react/prop-types": 0,
+        "no-prototype-builtins": "off"
+    },
+    "overrides": [
+        {
+            "files": ["**/*.ts"],
+            "extends": [
+                "eslint:recommended",
+                "plugin:react/recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@typescript-eslint/eslint-recommended"
+            ],
+            "parser": "@typescript-eslint/parser",
+            "plugins": ["react", "@typescript-eslint"],
+            "parserOptions": {
+                "ecmaFeatures": {
+                    "jsx": true
+                },
+                "ecmaVersion": 2018,
+                "sourceType": "module",
+                "project": "./tsconfig.json"
+            },
+            "env": {
+                "browser": true,
+                "es6": true,
+                "node": true
+            },
+            "rules": {
+                "@typescript-eslint/ban-ts-comment": "off"
+            }
+        }
+    ]
 }
