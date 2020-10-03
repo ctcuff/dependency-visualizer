@@ -20,6 +20,7 @@ class SearchInput extends React.Component {
         }
 
         this.inputRef = React.createRef()
+
         this.onSearch = this.onSearch.bind(this)
         this.updateInputValue = this.updateInputValue.bind(this)
         this.onInputFocus = this.onInputFocus.bind(this)
@@ -27,6 +28,8 @@ class SearchInput extends React.Component {
         this.renderSuggestions = this.renderSuggestions.bind(this)
         this.onMenuItemClick = this.onMenuItemClick.bind(this)
         this.onEscPress = this.onEscPress.bind(this)
+        this.updatePageURL = this.updatePageURL.bind(this)
+        this.searchPackageFromURL = this.searchPackageFromURL.bind(this)
 
         this.getSuggestions = debounce(this.getSuggestions.bind(this), 250)
 
@@ -42,11 +45,16 @@ class SearchInput extends React.Component {
 
     componentDidMount() {
         document.addEventListener('keyup', this.onEscPress)
+        window.addEventListener('popstate', this.searchPackageFromURL)
+
+        this.searchPackageFromURL()
     }
 
     componentWillUnmount() {
         this.unsubscribe()
+
         document.removeEventListener('keyup', this.onEscPress)
+        window.removeEventListener('popstate', this.searchPackageFromURL)
     }
 
     onEscPress(event) {
@@ -55,8 +63,25 @@ class SearchInput extends React.Component {
         }
     }
 
+    updatePageURL(query) {
+        const url = `${window.location.pathname}?q=${encodeURIComponent(query)}`
+        window.history.pushState({}, '', url)
+    }
+
+    searchPackageFromURL() {
+        // Gets the query /?q=packageName from the URL
+        const params = new URLSearchParams(window.location.search)
+        const query = params.get('q')
+
+        if (query && this.state.inputValue !== query) {
+            this.setState({ inputValue: query })
+            this.props.searchPackage(query)
+        }
+    }
+
     updateInputValue(event) {
         let inputValue = event.target.value
+
         // inputValue in the state isn't trimmed so
         // we can allow spaces to be entered
         this.setState({
@@ -96,14 +121,20 @@ class SearchInput extends React.Component {
         // keyboard on mobile devices
         event.target.blur()
 
+        this.updatePageURL(inputValue)
         this.props.searchPackage(inputValue)
         this.setState({ inputValue })
     }
 
     onMenuItemClick(event) {
         const packageName = event.item.props.packagename
-        this.setState({ inputValue: packageName })
-        this.props.searchPackage(packageName)
+
+        // Prevent trying to load the same package again
+        if (this.state.inputValue !== packageName) {
+            this.updatePageURL(packageName)
+            this.setState({ inputValue: packageName })
+            this.props.searchPackage(packageName)
+        }
     }
 
     getSuggestions(query) {
