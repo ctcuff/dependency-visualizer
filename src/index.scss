@@ -2,3 +2,12 @@ body {
     margin: 0;
     padding: 0;
 }
+
+// Allows an element to take up 100vh minus the
+// height of the browser's interface (this is a problem
+// on mobile devices)
+// stylelint-disable-next-line
+@mixin full-height {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+}

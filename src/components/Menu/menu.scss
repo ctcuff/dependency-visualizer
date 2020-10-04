@@ -1,3 +1,5 @@
+@import "src/index.scss";
+
 $border-color: lightgrey;
 
 .menu {
@@ -9,7 +11,7 @@ $border-color: lightgrey;
     }
 
     .menu-open-btn {
-        position: absolute;
+        position: fixed;
         margin: 1em;
         z-index: 2;
     }
@@ -27,8 +29,9 @@ $border-color: lightgrey;
     }
 
     .sider {
+        @include full-height;
+
         border-right: 1px solid $border-color;
-        height: 100vh;
         overflow-y: auto;
         overflow-x: hidden;
 
