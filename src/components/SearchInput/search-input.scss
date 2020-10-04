@@ -1,33 +1,21 @@
-.search-input--menu {
-    // prettier-ignore
-    box-shadow:
-        0 3px 6px -4px rgba(0, 0, 0, 0.12),
-        0 6px 16px 0 rgba(0, 0, 0, 0.08),
-        0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
-    max-height: 20em;
-    overflow: auto;
-    position: absolute;
-    z-index: 2;
-    border: 1px solid lightgray;
-    border-top: none;
-    margin: 0 1.5em;
-    right: 0;
-    left: 0;
+.auto-complete {
+    .ant-select-dropdown {
+        padding: 0;
+    }
 
-    .ant-menu-item {
-        height: 100%;
-        line-height: 2em;
-        margin-bottom: 1em;
-
-        &:first-child {
-            margin-top: 1em;
-        }
+    .ant-select-item-option-content {
+        // Lets the text for the package description
+        // in the AutoComplete menu take up multiple lines.
+        white-space: normal;
     }
 }
 
-.search-input--menu-item {
-    small {
-        margin-left: 1em;
-        white-space: normal;
+.auto-complete__item {
+    margin-bottom: 0.8em;
+    line-height: 2em;
+
+    p {
+        margin-right: 0.7em;
+        display: inline;
     }
 }

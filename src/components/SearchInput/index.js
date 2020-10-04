@@ -1,6 +1,6 @@
 import './search-input.scss'
 import React from 'react'
-import { Input, Menu } from 'antd'
+import { Input, AutoComplete } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import watch from 'redux-watch'
 import store from '../../store'
@@ -15,7 +15,6 @@ class SearchInput extends React.Component {
 
         this.state = {
             inputValue: '',
-            isInputFocused: false,
             suggestions: []
         }
 
@@ -23,10 +22,7 @@ class SearchInput extends React.Component {
 
         this.onSearch = this.onSearch.bind(this)
         this.updateInputValue = this.updateInputValue.bind(this)
-        this.onInputFocus = this.onInputFocus.bind(this)
-        this.onInputBlur = this.onInputBlur.bind(this)
-        this.renderSuggestions = this.renderSuggestions.bind(this)
-        this.onMenuItemClick = this.onMenuItemClick.bind(this)
+        this.onSuggestionClick = this.onSuggestionClick.bind(this)
         this.onEscPress = this.onEscPress.bind(this)
         this.updatePageURL = this.updatePageURL.bind(this)
         this.searchPackageFromURL = this.searchPackageFromURL.bind(this)
@@ -80,42 +76,18 @@ class SearchInput extends React.Component {
     }
 
     updateInputValue(event) {
-        let inputValue = event.target.value
+        let inputValue = event.target.value.trim()
 
-        // inputValue in the state isn't trimmed so
-        // we can allow spaces to be entered
-        this.setState({
-            inputValue,
-            suggestions: []
-        })
+        this.setState({ inputValue })
 
-        inputValue = inputValue.trim()
-
-        if (inputValue) {
+        if (inputValue && this.state.inputValue !== inputValue) {
+            this.setState({ suggestions: [] })
             this.getSuggestions(inputValue)
         }
     }
 
-    onInputFocus() {
-        this.setState({ isInputFocused: true })
-    }
-
-    onInputBlur() {
-        // The input looses focus before a menu item is clicked
-        // so we need to delay focus loss to let the menu
-        // click listener fire first
-        setTimeout(() => {
-            this.setState({ isInputFocused: false })
-        }, 150)
-    }
-
     onSearch(event) {
         const inputValue = event.target.value.trim()
-
-        // Prevent searching for a package that was just searched
-        if (!inputValue || inputValue === this.props.searchQuery) {
-            return
-        }
 
         // Taking focus away from the input closes the
         // keyboard on mobile devices
@@ -126,65 +98,51 @@ class SearchInput extends React.Component {
         this.setState({ inputValue })
     }
 
-    onMenuItemClick(event) {
-        const packageName = event.item.props.packagename
-
-        // Prevent trying to load the same package again
-        if (this.state.inputValue !== packageName) {
-            this.updatePageURL(packageName)
-            this.setState({ inputValue: packageName })
-            this.props.searchPackage(packageName)
-        }
+    onSuggestionClick(packageName) {
+        this.inputRef.current.blur()
+        this.setState({ inputValue: packageName })
+        this.props.searchPackage(packageName)
     }
 
     getSuggestions(query) {
-        API.getSuggestions(query).then(suggestions => this.setState({ suggestions }))
+        API.getSuggestions(query).then(result => {
+            const suggestions = result.map(suggestion => ({
+                value: suggestion.name,
+                label: (
+                    <div className="auto-complete__item">
+                        <p>{suggestion.name}</p>
+                        <small>{suggestion.description}</small>
+                    </div>
+                )
+            }))
+
+            this.setState({ suggestions })
+        })
     }
-
-    renderSuggestions() {
-        if (
-            !this.state.inputValue.trim() ||
-            !this.state.isInputFocused ||
-            this.state.suggestions.length === 0
-        ) {
-            return null
-        }
-
-        // Pass in our own packagename prop to each menu item
-        // so we can read it when a menu item is clicked
-        return (
-            <Menu onClick={this.onMenuItemClick} className="search-input--menu">
-                {this.state.suggestions.map((item, index) => (
-                    <Menu.Item
-                        key={index}
-                        packagename={item.name}
-                        className="search-input--menu-item"
-                    >
-                        {item.name}
-                        <small>{item.description}</small>
-                    </Menu.Item>
-                ))}
-            </Menu>
-        )
-    }
-
     render() {
         return (
-            <div className="search-input">
+            <AutoComplete
+                className="auto-complete"
+                dropdownMatchSelectWidth
+                options={(this.state.inputValue && this.state.suggestions) || []}
+                onSelect={this.onSuggestionClick}
+                // Keeps the container from sticking on scroll.
+                // See https://stackoverflow.com/questions/53862539/
+                getPopupContainer={trigger => trigger.parentElement}
+            >
                 <Input
+                    spellCheck="false"
+                    autoCapitalize="false"
+                    autoComplete="false"
                     value={this.state.inputValue}
-                    className="input-search"
                     placeholder="Search..."
                     size="large"
                     prefix={<SearchOutlined />}
                     onPressEnter={this.onSearch}
                     onChange={this.updateInputValue}
                     ref={this.inputRef}
-                    onBlur={this.onInputBlur}
-                    onFocus={this.onInputFocus}
                 />
-                {this.renderSuggestions()}
-            </div>
+            </AutoComplete>
         )
     }
 }
