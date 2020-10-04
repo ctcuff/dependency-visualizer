@@ -20,7 +20,7 @@ class SearchInput extends React.Component {
 
         this.inputRef = React.createRef()
 
-        this.onSearch = this.onSearch.bind(this)
+        this.onPressEnter = this.onPressEnter.bind(this)
         this.updateInputValue = this.updateInputValue.bind(this)
         this.onSuggestionClick = this.onSuggestionClick.bind(this)
         this.onEscPress = this.onEscPress.bind(this)
@@ -59,9 +59,13 @@ class SearchInput extends React.Component {
         }
     }
 
-    updatePageURL(query) {
-        const url = `${window.location.pathname}?q=${encodeURIComponent(query)}`
-        window.history.pushState({}, '', url)
+    updatePageURL(packageName) {
+        const prevUrl = window.location.pathname + window.location.search
+        const newUrl = `${window.location.pathname}?q=${encodeURIComponent(packageName)}`
+
+        if (prevUrl !== newUrl) {
+            window.history.pushState({}, '', newUrl)
+        }
     }
 
     searchPackageFromURL() {
@@ -69,24 +73,28 @@ class SearchInput extends React.Component {
         const params = new URLSearchParams(window.location.search)
         const query = params.get('q')
 
-        if (query && this.state.inputValue !== query) {
+        if (query) {
             this.setState({ inputValue: query })
             this.props.searchPackage(query)
         }
     }
 
-    updateInputValue(event) {
-        let inputValue = event.target.value.trim()
-
+    updateInputValue(inputValue) {
+        // inputValue in the state isn't trimmed so
+        // we can allow spaces to be entered
         this.setState({ inputValue })
 
-        if (inputValue && this.state.inputValue !== inputValue) {
+        inputValue = inputValue.trim()
+
+        // Prevents re-rendering suggestions if the input contains
+        // leading or trailing
+        if (inputValue && this.state.inputValue.trim() !== inputValue) {
             this.setState({ suggestions: [] })
             this.getSuggestions(inputValue)
         }
     }
 
-    onSearch(event) {
+    onPressEnter(event) {
         const inputValue = event.target.value.trim()
 
         // Taking focus away from the input closes the
@@ -100,6 +108,7 @@ class SearchInput extends React.Component {
 
     onSuggestionClick(packageName) {
         this.inputRef.current.blur()
+        this.updatePageURL(packageName)
         this.setState({ inputValue: packageName })
         this.props.searchPackage(packageName)
     }
@@ -119,13 +128,22 @@ class SearchInput extends React.Component {
             this.setState({ suggestions })
         })
     }
+
     render() {
         return (
             <AutoComplete
                 className="auto-complete"
                 dropdownMatchSelectWidth
-                options={(this.state.inputValue && this.state.suggestions) || []}
+                options={this.state.suggestions}
                 onSelect={this.onSuggestionClick}
+                value={this.state.inputValue}
+                onChange={this.updateInputValue}
+                onInputKeyDown={event => {
+                    // Prevents clearing the input when esc is pressed
+                    if (event.key === 'Escape') {
+                        event.preventDefault()
+                    }
+                }}
                 // Keeps the container from sticking on scroll.
                 // See https://stackoverflow.com/questions/53862539/
                 getPopupContainer={trigger => trigger.parentElement}
@@ -134,12 +152,10 @@ class SearchInput extends React.Component {
                     spellCheck="false"
                     autoCapitalize="false"
                     autoComplete="false"
-                    value={this.state.inputValue}
                     placeholder="Search..."
                     size="large"
                     prefix={<SearchOutlined />}
-                    onPressEnter={this.onSearch}
-                    onChange={this.updateInputValue}
+                    onPressEnter={this.onPressEnter}
                     ref={this.inputRef}
                 />
             </AutoComplete>
