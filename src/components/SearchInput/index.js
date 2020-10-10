@@ -97,6 +97,10 @@ class SearchInput extends React.Component {
     onPressEnter(event) {
         const inputValue = event.target.value.trim()
 
+        if (!inputValue) {
+            return
+        }
+
         // Taking focus away from the input closes the
         // keyboard on mobile devices
         event.target.blur()
@@ -132,8 +136,9 @@ class SearchInput extends React.Component {
     render() {
         return (
             <AutoComplete
-                className="auto-complete"
+                backfill
                 dropdownMatchSelectWidth
+                className="auto-complete"
                 options={this.state.suggestions}
                 onSelect={this.onSuggestionClick}
                 value={this.state.inputValue}
@@ -143,9 +148,16 @@ class SearchInput extends React.Component {
                     if (event.key === 'Escape') {
                         event.preventDefault()
                     }
+
+                    // Pressing enter when a suggestion is focused causes
+                    // a search for the focused suggestion and the text in the input.
+                    // Stopping the event only searches for the input text.
+                    if (event.key === 'Enter') {
+                        event.stopPropagation()
+                    }
                 }}
                 // Keeps the container from sticking on scroll.
-                // See https://stackoverflow.com/questions/53862539/
+                // See https://stackoverflow.com/a/63338339/9124220
                 getPopupContainer={trigger => trigger.parentElement}
             >
                 <Input
