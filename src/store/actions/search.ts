@@ -47,8 +47,11 @@ const updateSearchProgress = (
 
 const searchPackage = (query: string): ActionCreator<void> => {
     return (dispatch: Dispatch | ActionCreator<void>) => {
-        // Prevents searching for the same package twice
-        if (store.getState().search.searchQuery === query) {
+        const state = store.getState().search
+
+        // Prevents searching for the same package twice or trying to load
+        // multiple queries at a time
+        if (state.searchQuery === query || state.isLoading) {
             return
         }
 
