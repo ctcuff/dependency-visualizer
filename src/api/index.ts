@@ -144,10 +144,14 @@ const getPackageDependencies = (packageName: string): Promise<string[]> => {
 }
 
 const getSuggestions = (query: string): Promise<Suggestion[]> => {
+    if (!query) {
+        return Promise.resolve([])
+    }
+
+    const cached = Cache.getSuggestions(query)
     const url = `https://registry.npmjs.org/-/v1/search?size=10&from=0&text="${encodeURIComponent(
         query
     )}"`
-    const cached = Cache.getSuggestions(query)
 
     return new Promise((resolve, reject) => {
         if (cached) {

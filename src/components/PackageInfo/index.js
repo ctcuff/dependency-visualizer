@@ -3,6 +3,7 @@ import React from 'react'
 import { Row, Col, Progress, Statistic, Collapse, Divider } from 'antd'
 import { connect } from 'react-redux'
 import Errors from '../../util/errors'
+import { searchPackage } from '../../store/actions/search'
 
 const { Panel } = Collapse
 
@@ -116,20 +117,20 @@ const Dependencies = props => {
                     header={`Direct Dependencies: ${deps.length}`}
                     className="dependencies-collapse-panel"
                 >
-                    {deps.map(key => (
+                    {deps.map(packageName => (
                         <div
-                            key={key}
+                            key={packageName}
                             className="dependency-info"
-                            onClick={() => props.onDependencyClick(key)}
+                            onClick={() => props.onDependencyClick(packageName)}
                         >
-                            <span className="dependency-name" title={key}>
-                                {key}
+                            <span className="dependency-name" title={packageName}>
+                                {packageName}
                             </span>
                             <span
                                 className="dependency-name"
-                                title={props.dependencies[key]}
+                                title={props.dependencies[packageName]}
                             >
-                                {props.dependencies[key]}
+                                {props.dependencies[packageName]}
                             </span>
                         </div>
                     ))}
@@ -202,7 +203,15 @@ const PackageInfo = props => {
             <QualityStats quality={quality} popularity={popularity} />
             <Dependencies
                 dependencies={dependencies}
-                onDependencyClick={props.onDependencyClick}
+                onDependencyClick={packageName => {
+                    // Update the url to include a query string with the package name
+                    // when a dependency is clicked
+                    const url = `${window.location.pathname}?q=${encodeURIComponent(
+                        packageName
+                    )}`
+                    window.history.pushState({}, '', url)
+                    props.searchPackage(packageName)
+                }}
             />
             <Divider className="package-info-divider" />
         </div>
@@ -216,4 +225,8 @@ const mapStateToProps = state => ({
     searchQuery: state.search.searchQuery
 })
 
-export default connect(mapStateToProps)(PackageInfo)
+const mapDispatchToProps = {
+    searchPackage
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PackageInfo)

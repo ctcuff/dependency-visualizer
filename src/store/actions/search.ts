@@ -12,6 +12,7 @@ import API from '../../api'
 import Errors from '../../util/errors'
 import { ActionCreator, Dispatch } from 'redux'
 import { PackageJson } from './package'
+import store from 'store'
 
 const searchStart = (query: string): SearchAction => ({
     type: SEARCH_STARTED,
@@ -46,6 +47,14 @@ const updateSearchProgress = (
 
 const searchPackage = (query: string): ActionCreator<void> => {
     return (dispatch: Dispatch | ActionCreator<void>) => {
+        const state = store.getState().search
+
+        // Prevents searching for the same package twice or trying to load
+        // multiple queries at a time
+        if (state.searchQuery === query || state.isLoading) {
+            return
+        }
+
         dispatch(clearPackageInfo())
         dispatch(searchStart(query))
         dispatch(getPackageInfo(query))
